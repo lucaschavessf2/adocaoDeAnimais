@@ -7,7 +7,7 @@ def return_layout():
         dbc.Col(
             dbc.Card(
                 dbc.CardBody([
-                    dcc.Location(id='url_geral',refresh=False),
+                    dcc.Location(id='url',refresh=False),
                     dcc.Location(id='url_cadastro',refresh=False),
                     dcc.Location(id='url_login',refresh=False),
                     html.Div(id="main-card",children=[

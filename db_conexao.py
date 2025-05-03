@@ -1,3 +1,4 @@
+import bcrypt
 import sqlite3
 
 class Conexao:
@@ -19,7 +20,7 @@ class Conexao:
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS login_usuarios (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT,
+            email TEXT UNIQUE,
             senha TEXT
             );
         """)
@@ -33,19 +34,34 @@ class Conexao:
         self.encerrar()
         print(self.consultar_dados(tabela,"*"))
 
-    def consultar_dados(self,tabela,colunas,filtro=''):
+    
+
+    def consultar_dados(self, tabela, colunas, filtro='', params=()):
         self.iniciar()
-        sql = f"""SELECT {colunas} FROM {tabela} """+filtro
+        sql = f"SELECT {colunas} FROM {tabela} {filtro}"
         print(sql)
-        self.cursor.execute(sql)
+        self.cursor.execute(sql, params)
         linhas = self.cursor.fetchall()
         self.encerrar()
         return linhas
 
-    def verificar_login(self,email,senha):
-        linhas = self.consultar_dados("login_usuarios","COUNT(*)",f"WHERE email = '{email}' and senha = '{senha}'")
-        if linhas[0][0] > 0:
+    def verificar_login(self, email, senha):
+        linhas = self.consultar_dados(
+            "login_usuarios",
+            "senha",
+            "WHERE email = ?",
+            (email,)
+        )
+        if not linhas:
+            return False
+        hash_senha_banco = linhas[0][0]
+        if isinstance(hash_senha_banco, str):
+            hash_senha_banco = hash_senha_banco.encode('utf-8')
+        senha_bytes = senha.encode('utf-8')
+        if bcrypt.checkpw(senha_bytes, hash_senha_banco):
             return True
         else:
             return False
+
+
         

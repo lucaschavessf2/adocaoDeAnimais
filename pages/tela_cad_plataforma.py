@@ -22,6 +22,8 @@ def return_layout():
             dbc.Input(id='input-cd-senha',placeholder="",type='password', size="sm"),
         ],style={'display':'flex'}),
         html.Hr(style={'margin-top': '3px','margin-bottom': '10px'}),
+        html.Span(id='span-cadastro-aviso',style={'color':'#fd7e14','text-aling':'center'}),
+        html.Hr(style={'margin-top': '3px','margin-bottom': '10px'}),
         dbc.Button('CADASTRAR',id='btn-cad-cadastrar',color='success', style={'background-color': '#0c581e'}),
         html.Span(id='span-add-final',style={'color':'#fd7e14','text-aling':'center'}),  
     ])

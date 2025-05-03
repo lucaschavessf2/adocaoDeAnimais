@@ -6,7 +6,7 @@ from callbacks import Callbacks
 
 
 if __name__ == "__main__":
-    app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY])
+    app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY], suppress_callback_exceptions=True)
     app.layout= tela_padrao.return_layout()
     app.config.suppress_callback_exceptions = True
     callbacks = Callbacks(app)
