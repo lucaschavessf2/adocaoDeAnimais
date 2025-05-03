@@ -14,7 +14,9 @@ def return_layout():
             dbc.Input(id='input-login-senha',placeholder="",type='password', size="sm"),
         ],style={'display':'flex'}),
         html.Hr(style={'margin-top': '3px','margin-bottom': '10px'}),
-        dbc.Button('ENTRAR',id='btn-entrar',color='success',href='/prox-menu', style={'background-color': '#0c581e'}),
-        html.Span(id='span-add-final',style={'color':'#fd7e14','text-aling':'center'}),  
+        html.Span(id='span-login-aviso',style={'color':'#fd7e14','text-aling':'center'}),
+        html.Hr(style={'margin-top': '3px','margin-bottom': '10px'}),
+        dbc.Button('ENTRAR',id='btn-login-entrar',color='success', style={'background-color': '#0c581e'}),
+         
     ])
     return layout

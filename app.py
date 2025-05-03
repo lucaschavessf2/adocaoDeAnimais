@@ -12,5 +12,5 @@ if __name__ == "__main__":
     callbacks = Callbacks(app)
     callbacks.definir_callbacks()
     #webbrowser.open_new_tab('http://localhost:8050')
-    app.run_server(port=8050, debug=True)
+    app.run(port=8050, debug=True)
                    
