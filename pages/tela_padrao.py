@@ -5,16 +5,16 @@ def return_layout():
     layout = dbc.Container(
     dbc.Row(
         dbc.Col(
-            dbc.Card(
-                dbc.CardBody([
-                    dcc.Location(id='url',refresh=False),
-                    dcc.Location(id='url_cadastro',refresh=False),
-                    dcc.Location(id='url_login',refresh=False),
-                    html.Div(id="main-card",children=[
-                    ])   
-                ]),className="shadow p-4",style={"backgroundColor": "#f8f9fa", "borderRadius": "20px"}
-            ),width=8,className="d-flex justify-content-center align-items-center flex-column",
-        ),className="vh-100 d-flex justify-content-center align-items-center"
-    ),fluid=True,className="bg-light"
+            html.Div([
+                dcc.Location(id='url', refresh=False),
+                dcc.Store(id='session-login', data={'logado': False}, storage_type='session'),
+                dcc.Store(id='session-usuario', storage_type='session'),
+                html.Div(id="main-card",children=[], className="d-flex flex-column justify-content-center align-items-center", style={"height": "100vh"})  
+            ], ),
+            width=12
+        ),
+    style={"backgroundImage": "url('/assets/Design-sem-nome-69.png')",}),
+    fluid=True,
+    className="bg-light"
 )
     return layout

@@ -2,29 +2,40 @@ from dash import html, dcc
 import dash_bootstrap_components as dbc
 
 def return_layout():
-    layout = dbc.Card([
-        html.H1('CADASTRO USUÁRIO',style={'display':'flex','align-items': 'center','justify-itemns':'center'}),
-        html.H4('Nome: '),
-        html.Div(children=[
-            dbc.Input(id='input-cd-nome',placeholder="",type='text', size="sm"),
-        ],style={'display':'flex'}),
-        html.H4('DATA DE NASCIMENTO:'),
-        html.Div(children=[
-            dbc.Input(id='input-cd-dtnascimento',placeholder="(DD/MM/YYYY)",type='text', size="sm"),
-        ],style={'display':'flex'}),
-        html.H4('Email: '),
-        html.Div(children=[
-            dbc.Input(id='input-cd-email',placeholder="",type="email", size="sm"),
-        ],style={'display':'flex'}),
+    layout = dbc.Card(
+    dbc.CardBody([
+        html.H3("CADASTRO DE USUÁRIO", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
+
+        html.H4("Nome:", style = {'color':'black'}),
+        dbc.Input(id='input-cd-nome', placeholder="Digite seu nome completo", type='text', size="sm", className="mb-3"),
+
+        html.H4("Data de nascimento:", style = {'color': 'black'}),
+        dbc.Input(id='input-cd-dtnascimento', placeholder="DD/MM/AAAA", type='text', size="sm", className="mb-3"),
+
+        html.H4("Telefone:"),
+        dbc.Input(id='input-cd-telefone', placeholder="(00) 00000-0000", type='text', size="sm", className="mb-3"),
+
+        html.H4("Email:"),
+        dbc.Input(id='input-cd-email', placeholder="Digite seu email", type='email', size="sm", className="mb-3"),
+
+        html.H4("Senha:"),
+        dbc.Input(id='input-cd-senha', placeholder="Crie uma senha", type='password', size="sm", className="mb-3"),
+
+        html.Span(id='span-cadastro-aviso', className="text-warning text-center d-block mb-2"),
+
+        dbc.Button("CADASTRAR", id='btn-cad-cadastrar', color="primary", className="w-100 mb-2", size="md"),
+        dbc.Button("VOLTAR", id="btn-cad-voltar", href="/", color="secondary", className="w-100", size="md"),
+    
         
-        html.H4('Senha:'),
-        html.Div(children=[
-            dbc.Input(id='input-cd-senha',placeholder="",type='password', size="sm"),
-        ],style={'display':'flex'}),
-        html.Hr(style={'margin-top': '3px','margin-bottom': '10px'}),
-        html.Span(id='span-cadastro-aviso',style={'color':'#fd7e14','text-aling':'center'}),
-        html.Hr(style={'margin-top': '3px','margin-bottom': '10px'}),
-        dbc.Button('CADASTRAR',id='btn-cad-cadastrar',color='success', style={'background-color': '#0c581e'}),
-        html.Span(id='span-add-final',style={'color':'#fd7e14','text-aling':'center'}),  
-    ])
+        html.Span(id='span-add-final', className="text-success text-center d-block")
+    ],style={'maxHeigth':'200px','display':'inline-table'}),
+    className="shadow-sm p-4",
+
+    style={
+        "maxWidth": "700px",
+        "width": "100%",
+        "borderRadius": "12px",
+        "backgroundColor": "#f8f9fa"
+    }
+)
     return layout
