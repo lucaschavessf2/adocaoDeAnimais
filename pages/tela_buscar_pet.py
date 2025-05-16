@@ -6,14 +6,15 @@ def gerar_cards(pets):
     cards = []
     count = 1
     qtd_pets = len(pets)
-    for pet in pets:
+    for i, pet in enumerate(pets):
         if count <= 3:
             card = dbc.Col([
                     dbc.Card([
                         html.H4(f"Animal: {pet[2]}"),
                         html.H4(f"Estágio: {pet[3]}"),
-                        html.H4(f"Cor: {pet[5]}"),
-                        html.H4(f"Espécie: {pet[6]}")
+                        html.H4(f"Cor: {pet[4]}"),
+                        html.H4(f"Espécie: {pet[5]}"),
+                        dbc.Button(id={'type': 'btn-card-adotar', 'index': pet[0]},children='Adotar',style={'margin':'5px'})
                     ],style={"box-shadow": "2px 2px 10px 0px rgba(10, 9, 7, 0.10)","backgroundColor": "#DCDCDC","widht":'100%','height':'95%',"margin-bottom":'10px'})
                 ], md=4)
             cards.append(card)  
@@ -32,6 +33,10 @@ def return_layout(pets):
         dbc.CardBody([
             html.H3("RECOMENDAÇÕES DE PET", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
             html.Hr(style={'width':'100%'}),
+            html.Div(children=[
+                dbc.Input(id='input-buscar-busca', placeholder="Pesquise aqui seu próximo animal", type='text', size="sm", className="mb-3"),
+                dbc.Button(id='btn-buscar-busca',children='Pesquisar',style={'margin-left':'5px','height':'68%'}, size="sm")
+            ],style={'display':'flex','width':'100%'}),
             html.Div(id='div-rec-itens',children=cards,style={'overflowY': 'auto','width':'100%','height':'90%'}),
 
             

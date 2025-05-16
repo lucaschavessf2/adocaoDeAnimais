@@ -16,10 +16,11 @@ def return_layout(layout_interno,session_usuario):
                             "width": "100%"
                         }),
                         html.H1(f"Olá, {session_usuario['nome']}", style={'font-family': 'Voltaire', 'font-size': '20px','color':'black'}),
-                        dbc.Button(id='btn-menu-buscar', children='Buscar', href='/buscar-pet',style={'margin-bottom':'10px'}),
+                        dbc.Button(id='btn-menu-buscar', children='Buscar', href='/buscar-pet/',style={'margin-bottom':'10px'}),
                         dbc.Button(id='btn-menu-perfil', children='Perfil', href='/perfil',style={'margin-bottom':'10px'}),
                         dbc.Button(id='btn-menu-cadastrar', children='Cadastrar', href='/cadastrar-pet'),
-                        html.Div(style={'height':'100%'})
+                        html.Div(style={'height':'100%'}),
+                        dbc.Button(id='btn-menu-sair', children='Sair', href='/entrar',style={'background-color':'red'}),
                     ], style=style_sidebar)
                 ], md=2),
                 dbc.Col(children=[

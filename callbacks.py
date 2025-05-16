@@ -1,7 +1,7 @@
 import re
 import dash
 import bcrypt
-from dash import dcc
+from dash import dcc, ALL, ctx
 from datetime import datetime
 from db_conexao import Conexao
 from dash.dependencies import Input, Output, State
@@ -53,8 +53,10 @@ class Callbacks:
             elif caminho == '/cadastrar':
                 return tela_cad_plataforma.return_layout()
             if logado:
-                if caminho == '/buscar-pet':
-                    pets = self.db_conexao.consultar_dados("pets","*")
+                if '/buscar-pet/' in caminho:
+                    busca = caminho.split('/')[2]
+                    print(busca)
+                    pets = self.db_conexao.consultar_dados("pets","*",f"where id_usuario != ? and (especie like '%{busca}%')",(session_usuario['id'],))
                     layout_interno = tela_buscar_pet.return_layout(pets)
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif caminho == '/cadastrar-pet':
@@ -84,26 +86,54 @@ class Callbacks:
                 return dash.no_update
 
         #Ativa quando o botão da tela de login é ativado, verifica se é possível o login e muda a url 
-        @self.app.callback([Output('session-login', 'data'),Output('url','pathname', allow_duplicate=True),Output('span-login-aviso','children'),Output('session-usuario', 'data')],[Input('btn-login-entrar','n_clicks'),State('input-login-email','value'),State('input-login-senha','value')],prevent_initial_call=True)
+        @self.app.callback([Output('session-login', 'data', allow_duplicate=True),Output('url','pathname', allow_duplicate=True),Output('span-login-aviso','children'),Output('session-usuario', 'data')],[Input('btn-login-entrar','n_clicks'),State('input-login-email','value'),State('input-login-senha','value')],prevent_initial_call=True)
         def __botao_login(botao,email,senha):
             if botao:
                 login = self.db_conexao.verificar_login(email,senha)
                 if login[0]:
                     dados_usuario = self.db_conexao.coletar_dados_usuario(login[1])
-                    return [{'logado': True},'/buscar-pet',"",dados_usuario]
+                    return [{'logado': True},'/buscar-pet/',"",dados_usuario]
                 else:
                     return [dash.no_update,dash.no_update,"E-mail ou senha inválidos",dash.no_update]
             else:
                 return dash.no_update
 
         #Ativa quando o botão da tela de cadastro é ativado
-        @self.app.callback([Output('span-cadpet-aviso','children')],[Input('btn-cadpet-add','n_clicks'),State('ri-cadpet-especie','value'),State('ri-cadpet-estagio','value'),State('input-cadpet-cor','value'),State('input-cadpet-raca','value'),State('session-usuario', 'data')],prevent_initial_call=True)
+        @self.app.callback([Output('span-cadpet-aviso','children', allow_duplicate=True)],[Input('btn-cadpet-add','n_clicks'),State('ri-cadpet-especie','value'),State('ri-cadpet-estagio','value'),State('input-cadpet-cor','value'),State('input-cadpet-raca','value'),State('session-usuario', 'data')],prevent_initial_call=True)
         def __botao_cadastro_pet(botao,especie,estagio,cor,raca,session_usuario):
             if botao:
                     self.db_conexao.inserir_dados("pets","(id_usuario,especie,estagio,cor,raca)",(session_usuario['id'],especie,estagio,cor,raca))
                     return ["Cadastro efetuado com sucesso"]
             else:
                 return dash.no_update
-    
+            
+        @self.app.callback([Output('session-login', 'data')],[Input('btn-menu-sair','n_clicks')],prevent_initial_call=True)
+        def __botao_sair(botao):
+            if botao:
+                return [{'logado': False}]
+            return dash.no_update
+
+
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input('btn-buscar-busca','n_clicks'),State('input-buscar-busca','value')],prevent_initial_call=True)
+        def __botao_pesquisa(botao,pesquisa):
+            if botao:
+                    if pesquisa == None:
+                        pesquisa = ""
+                    return [f"/buscar-pet/{pesquisa}"]
+            else:
+                return dash.no_update
+            
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input({'type': 'btn-card-adotar', 'index': ALL},'n_clicks'),State('session-usuario', 'data')],prevent_initial_call=True)
+        def __botao_adotar(botao,session_usuario):
+            if set(botao)!={None}:
+                triggered_id = ctx.triggered_id
+                if triggered_id:
+                    id_pet = triggered_id['index']
+                    adotado = self.db_conexao.consultar_dados('pets','*','where id = ?',(id_pet,))
+                    self.db_conexao.inserir_dados('adotados',"(id_usuario,especie,estagio,cor,raca)",(session_usuario['id'],)+(tuple(list(adotado[0])[2:])))
+                    self.db_conexao.deletar_dados('pets','WHERE id = ?',(id_pet,))
+                    print((session_usuario['id'],)+(tuple(list(adotado[0])[2:])))
+                    return ['/buscar-pet/']
+            return dash.no_update
 
 

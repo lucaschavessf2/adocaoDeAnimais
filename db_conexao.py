@@ -65,6 +65,17 @@ class Conexao:
             FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
         )
         """)
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS adotados (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_usuario INTEGER,
+            especie TEXT,
+            estagio DATE,
+            cor TEXT,
+            raca INTEGER,
+            FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+        )
+        """)
         self.encerrar()
 
     #Função que insere os dados em uma tabela
@@ -82,6 +93,13 @@ class Conexao:
         self.encerrar()
         print(self.consultar_dados(tabela,"*"))
         return ultimo_id
+    
+    def deletar_dados(self, tabela, filtro='', params=()):
+        self.iniciar()
+        sql = f"DELETE FROM {tabela} {filtro}"
+        print(sql)
+        self.cursor.execute(sql, params)
+        self.encerrar()
 
     
     #Função que consulta os dados em uma tabela e retorna suas linhas
@@ -103,7 +121,7 @@ class Conexao:
             (email,)
         )
         if not linhas:
-            return False
+            return [False]
         print(linhas)
         hash_senha_banco = linhas[0][0]
         id_usuario = linhas[0][1]
