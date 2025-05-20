@@ -5,7 +5,7 @@ from dash import dcc, ALL, ctx
 from datetime import datetime
 from db_conexao import Conexao
 from dash.dependencies import Input, Output, State
-from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil
+from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet
 
 #Função para verificar se é um email
 def verificar_email(email):
@@ -56,14 +56,21 @@ class Callbacks:
                 if '/buscar-pet/' in caminho:
                     busca = caminho.split('/')[2]
                     print(busca)
-                    pets = self.db_conexao.consultar_dados("pets","*",f"where id_usuario != ? and (especie like '%{busca}%')",(session_usuario['id'],))
+                    pets = self.db_conexao.consultar_dados("pets","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != ? and (especie like '%{busca}%')",(session_usuario['id'],))
                     layout_interno = tela_buscar_pet.return_layout(pets)
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif caminho == '/cadastrar-pet':
                     layout_interno =  tela_cad_pet.return_layout()
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif caminho == '/perfil':
-                    layout_interno =  tela_perfil.return_layout()
+                    pets = self.db_conexao.consultar_dados("pets","*",f"where id_usuario == ?",(session_usuario['id'],))
+                    layout_interno =  tela_perfil.return_layout(pets,session_usuario)
+                    return tela_menu_dois.return_layout(layout_interno,session_usuario)
+                elif '/editar-pet/' in caminho:
+                    id_pet = caminho.split('/')[2].split('$')[0]
+                    id_usuario = caminho.split('/')[2].split('$')[1]
+                    pet = self.db_conexao.consultar_dados('pets','*','where id = ?',(id_pet,))[0]
+                    layout_interno =  tela_edit_pet.return_layout(pet,id_usuario,session_usuario['id'])
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 return tela_menu.return_layout()
             else:
@@ -135,5 +142,35 @@ class Callbacks:
                     print((session_usuario['id'],)+(tuple(list(adotado[0])[2:])))
                     return ['/buscar-pet/']
             return dash.no_update
+        
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input({'type': 'btn-card-excluir', 'index': ALL},'n_clicks')],prevent_initial_call=True)
+        def __botao_excluir(botao):
+            if set(botao)!={None}:
+                triggered_id = ctx.triggered_id
+                if triggered_id:
+                    id_pet = triggered_id['index']
+                    self.db_conexao.deletar_dados('pets','WHERE id = ?',(id_pet,))
+                    return ['/perfil']
+            return dash.no_update
+        
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input({'type': 'btn-card-editar', 'index': ALL},'n_clicks')],prevent_initial_call=True)
+        def __botao_editar(botao):
+            if set(botao)!={None}:
+                triggered_id = ctx.triggered_id
+                if triggered_id:
+                    id_pet = triggered_id['index']
+                    adotado = self.db_conexao.consultar_dados('pets','*','where id = ?',(id_pet,))
+                    id_usuario = adotado[0][1]
+                    return [f'/editar-pet/{id_pet}${id_usuario}']
+            return dash.no_update
+        
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input('btn-editpet-finalizar','n_clicks'),State('url','pathname'),State('ri-editpet-estagio','value'),State('input-editpet-cor','value'),State('input-editpet-raca','value')],prevent_initial_call=True)
+        def __botao_atualizar_pet(botao,caminho,estagio,cor,raca):
+            if botao:
+                    id_pet = caminho.split('/')[2].split('$')[0]
+                    self.db_conexao.atualizar_dados("pets","(estagio,cor,raca)",(estagio,cor,raca),f"WHERE id ={id_pet}")
+                    return ["/perfil"]
+            else:
+                return dash.no_update
 
 

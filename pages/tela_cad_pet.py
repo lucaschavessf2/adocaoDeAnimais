@@ -7,11 +7,11 @@ def return_layout():
         html.H1('CADASTRO DE PET',style={'display':'flex','align-items': 'center','justify-itemns':'center', 'color' : 'black'}),
         html.H4('Espécie:'),
         html.Div(children=[
-            dbc.RadioItems(id='ri-cadpet-especie',options=[{'label':'Gato','value':'gato'},{'label':'Cachorro','value':'cahorro'},{'label':'Ave','value':'ave'},{'label':'Réptil','value':'réptil'},{'label':'Peixe','value':'peixe'},{'label':'Outro','value':'outro'}],inline=True),
+            dbc.RadioItems(id='ri-cadpet-especie',options=[{'label':'Gato','value':'gato'},{'label':'Cachorro','value':'cahorro'},{'label':'Ave','value':'ave'},{'label':'Réptil','value':'réptil'},{'label':'Peixe','value':'peixe'},{'label':'Outro','value':'outro'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
         ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
         html.H4('Estágio da vida:'),
         html.Div(children=[
-            dbc.RadioItems(id='ri-cadpet-estagio',options=[{'label':'Recém nascido','value':'rc'},{'label':'Filhote','value':'filhote'},{'label':'Adulto','value':'adulto'},{'label':'Velho','value':'Velho'}],inline=True),
+            dbc.RadioItems(id='ri-cadpet-estagio',options=[{'label':'Recém nascido','value':'rc'},{'label':'Filhote','value':'filhote'},{'label':'Adulto','value':'adulto'},{'label':'Velho','value':'Velho'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
         ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
         html.H4('Cor:'),
         html.Div(children=[
@@ -26,7 +26,8 @@ def return_layout():
         dbc.Button('ADICIONAR',id='btn-cadpet-add',color='primary')     
     ]
         ,style = {
-            "background-color" : "grey",
+            "background-color" : "white",
+            "padding":"20px"
         }
     )
 

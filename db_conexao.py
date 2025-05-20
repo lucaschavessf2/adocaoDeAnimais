@@ -101,6 +101,18 @@ class Conexao:
         self.cursor.execute(sql, params)
         self.encerrar()
 
+    def atualizar_dados(self,tabela,colunas,dados,filtro=''):
+        self.iniciar()
+        set_colunas = ""
+        for i,coluna in enumerate(colunas.split(',')):
+            set_colunas = set_colunas+coluna.replace('(','').replace(')','')+" = ?,"
+        set_colunas = set_colunas[:-1]
+        sql = f"""UPDATE {tabela} SET {set_colunas} {filtro}"""
+        print(sql)
+        self.cursor.execute(sql,dados)
+        self.encerrar()
+        print(self.consultar_dados(tabela,"*"))
+
     
     #Função que consulta os dados em uma tabela e retorna suas linhas
     def consultar_dados(self, tabela, colunas, filtro='', params=()):
@@ -149,5 +161,5 @@ class Conexao:
         }
         return dados_usuario
 
-
-        
+# c = Conexao()
+# print(c.consultar_dados("pets","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != 1"))

@@ -14,6 +14,7 @@ def gerar_cards(pets):
                         html.H4(f"Estágio: {pet[3]}"),
                         html.H4(f"Cor: {pet[4]}"),
                         html.H4(f"Espécie: {pet[5]}"),
+                        html.H4(f"Responsável: {pet[8]}"),
                         dbc.Button(id={'type': 'btn-card-adotar', 'index': pet[0]},children='Adotar',style={'margin':'5px'})
                     ],style={"box-shadow": "2px 2px 10px 0px rgba(10, 9, 7, 0.10)","backgroundColor": "#DCDCDC","widht":'100%','height':'95%',"margin-bottom":'10px'})
                 ], md=4)
