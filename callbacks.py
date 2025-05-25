@@ -5,7 +5,7 @@ from dash import dcc, ALL, ctx
 from datetime import datetime
 from db_conexao import Conexao
 from dash.dependencies import Input, Output, State
-from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet
+from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante
 
 #Função para verificar se é um email
 def verificar_email(email):
@@ -25,11 +25,11 @@ def verificar_data(data):
         return False
 
 #Função que verifica se o cadastro é válido
-def verificar_cadastro(nome,data,email,senha,db_conexao):
+def verificar_cadastro(nome,data,email,senha,telefone,endereco,db_conexao):
     email_real = verificar_email(email)
     data_real = verificar_data(data)
     email_existe = db_conexao.consultar_dados("login_usuarios","COUNT(*)",f"WHERE email = ?",(email,))
-    if None in [nome,data,email,senha] or "" in [nome,data,email,senha] or email_real == False or email_existe[0][0] > 0 or data_real == False:
+    if None in [nome,data,email,senha,telefone,endereco] or "" in [nome,data,email,senha,telefone,endereco] or email_real == False or email_existe[0][0] > 0 or data_real == False:
         return False
     return True
 
@@ -54,10 +54,15 @@ class Callbacks:
                 return tela_cad_plataforma.return_layout()
             if logado:
                 if '/buscar-pet/' in caminho:
-                    busca = caminho.split('/')[2]
-                    print(busca)
-                    pets = self.db_conexao.consultar_dados("pets","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != ? and (especie like '%{busca}%')",(session_usuario['id'],))
-                    layout_interno = tela_buscar_pet.return_layout(pets)
+                    adotantes = self.db_conexao.consultar_dados("adotantes","COUNT(*)",f"WHERE id_usuario = ?",(session_usuario['id'],))
+                    print(adotantes[0][0],'----------')
+                    if adotantes[0][0]>0:
+                        busca = caminho.split('/')[2]
+                        print(busca)
+                        pets = self.db_conexao.consultar_dados("pets","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != ? and (especie like '%{busca}%')",(session_usuario['id'],))
+                        layout_interno = tela_buscar_pet.return_layout(pets)
+                    else:
+                        layout_interno = tela_cad_adotante.return_layout()
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif caminho == '/cadastrar-pet':
                     layout_interno =  tela_cad_pet.return_layout()
@@ -77,15 +82,16 @@ class Callbacks:
                 return dcc.Location(href="/entrar", id="redirect-login")
 
         #Ativa quando o botão da tela de cadastro é ativado, verifica se é possível o cadastro e muda a url
-        @self.app.callback([Output('url','pathname', allow_duplicate=True),Output('span-cadastro-aviso','children')],[Input('btn-cad-cadastrar','n_clicks'),State('input-cd-nome','value'),State('input-cd-dtnascimento','value'),State('input-cd-email','value'),State('input-cd-senha','value'),State('input-cd-telefone','value')],prevent_initial_call=True)
-        def __botao_cadastro(botao,nome,data,email,senha,telefone):
+        @self.app.callback([Output('url','pathname', allow_duplicate=True),Output('span-cadastro-aviso','children')],[Input('btn-cad-cadastrar','n_clicks'),State('input-cd-nome','value'),State('input-cd-dtnascimento','value'),
+        State('input-cd-email','value'),State('input-cd-senha','value'),State('input-cd-telefone','value'),State('input-cd-endereco','value')],prevent_initial_call=True)
+        def __botao_cadastro(botao,nome,data,email,senha,telefone,endereco):
             if botao:
                 print('||',nome,"||")
-                if verificar_cadastro(nome,data,email,senha,self.db_conexao):
+                if verificar_cadastro(nome,data,email,senha,telefone,endereco,self.db_conexao):
                     senha_bytes = senha.encode('utf-8')
                     senha = bcrypt.hashpw(senha_bytes, bcrypt.gensalt())
                     id_login = self.db_conexao.inserir_dados("login_usuarios","(email,senha)",(email,senha))
-                    self.db_conexao.inserir_dados("usuarios","(id_login,nome,data_nascimento,telefone)",(id_login,nome,data,telefone))
+                    self.db_conexao.inserir_dados("usuarios","(id_login,nome,data_nascimento,telefone,endereco)",(id_login,nome,data,telefone,endereco))
                     return ["/entrar",""]
                 else:
                     return [dash.no_update,"Campos vázios, email em uso ou data inválida!"]
@@ -106,11 +112,24 @@ class Callbacks:
                 return dash.no_update
 
         #Ativa quando o botão da tela de cadastro é ativado
-        @self.app.callback([Output('span-cadpet-aviso','children', allow_duplicate=True)],[Input('btn-cadpet-add','n_clicks'),State('ri-cadpet-especie','value'),State('ri-cadpet-estagio','value'),State('input-cadpet-cor','value'),State('input-cadpet-raca','value'),State('session-usuario', 'data')],prevent_initial_call=True)
-        def __botao_cadastro_pet(botao,especie,estagio,cor,raca,session_usuario):
+        @self.app.callback([Output('span-cadpet-aviso','children', allow_duplicate=True)],[Input('btn-cadpet-add','n_clicks'),
+        State('ri-cadpet-especie','value'),State('ri-cadpet-estagio','value'),State('ri-cadpet-porte','value'),State('ri-cadpet-deficiencia','value'),
+        State('ri-cadpet-criancas','value'),State('ri-cadpet-outros','value'),State('ri-cadpet-temperamento','value'),
+        State('input-cadpet-cor','value'),State('input-cadpet-raca','value'),State('session-usuario', 'data')],prevent_initial_call=True)
+        def __botao_cadastro_pet(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca,session_usuario):
             if botao:
-                    self.db_conexao.inserir_dados("pets","(id_usuario,especie,estagio,cor,raca)",(session_usuario['id'],especie,estagio,cor,raca))
+                    self.db_conexao.inserir_dados("pets","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca))
                     return ["Cadastro efetuado com sucesso"]
+            else:
+                return dash.no_update
+            
+        @self.app.callback([Output('url','pathname', allow_duplicate=True),Output('span-cadadotante-aviso','children', allow_duplicate=True)],[Input('btn-cadadotante-add','n_clicks'),
+        State('ri-cadadotante-especie','value'),State('ri-cadadotante-estagio','value'),State('ri-cadadotante-porte','value'),State('ri-cadadotante-deficiencia','value'),
+        State('ri-cadadotante-criancas','value'),State('ri-cadadotante-outros','value'),State('ri-cadadotante-temperamento','value'),State('session-usuario', 'data')],prevent_initial_call=True)
+        def __botao_cadastro_adotante(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,session_usuario):
+            if botao:
+                    self.db_conexao.inserir_dados("adotantes","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento))
+                    return ["/buscar-pet/","Cadastro efetuado com sucesso"]
             else:
                 return dash.no_update
             

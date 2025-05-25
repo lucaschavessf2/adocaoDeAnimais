@@ -7,11 +7,31 @@ def return_layout():
         html.H1('CADASTRO DE PET',style={'display':'flex','align-items': 'center','justify-itemns':'center', 'color' : 'black'}),
         html.H4('Espécie:'),
         html.Div(children=[
-            dbc.RadioItems(id='ri-cadpet-especie',options=[{'label':'Gato','value':'gato'},{'label':'Cachorro','value':'cahorro'},{'label':'Ave','value':'ave'},{'label':'Réptil','value':'réptil'},{'label':'Peixe','value':'peixe'},{'label':'Outro','value':'outro'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
+            dbc.RadioItems(id='ri-cadpet-especie',options=[{'label':'Gato','value':'gato'},{'label':'Cachorro','value':'cachorro'},{'label':'Ave','value':'ave'},{'label':'Réptil','value':'réptil'},{'label':'Peixe','value':'peixe'},{'label':'Outro','value':'outro'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
         ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
         html.H4('Estágio da vida:'),
         html.Div(children=[
-            dbc.RadioItems(id='ri-cadpet-estagio',options=[{'label':'Recém nascido','value':'rc'},{'label':'Filhote','value':'filhote'},{'label':'Adulto','value':'adulto'},{'label':'Velho','value':'Velho'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
+            dbc.RadioItems(id='ri-cadpet-estagio',options=[{'label':'Recém nascido','value':'Recém nascido'},{'label':'Filhote','value':'Filhote'},{'label':'Adulto','value':'Adulto'},{'label':'Velho','value':'Velho'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
+        ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
+        html.H4('Porte:'),
+        html.Div(children=[
+            dbc.RadioItems(id='ri-cadpet-porte',options=[{'label':'Pequeno','value':'Pequeno'},{'label':'Médio','value':'Médio'},{'label':'Grande','value':'Grande'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
+        ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
+        html.H4('Deficiência:'),
+        html.Div(children=[
+            dbc.RadioItems(id='ri-cadpet-deficiencia',options=[{'label':'Sim','value':'Sim'},{'label':'Não','value':'Não'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
+        ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
+        html.H4('Para crianças:'),
+        html.Div(children=[
+            dbc.RadioItems(id='ri-cadpet-criancas',options=[{'label':'Sim','value':'Sim'},{'label':'Não','value':'Não'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
+        ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
+        html.H4('Pode viver com outros animais:'),
+        html.Div(children=[
+            dbc.RadioItems(id='ri-cadpet-outros',options=[{'label':'Sim','value':'Sim'},{'label':'Não','value':'Não'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
+        ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
+        html.H4('Temperamento:'),
+        html.Div(children=[
+            dbc.RadioItems(id='ri-cadpet-temperamento',options=[{'label':'Calmo','value':'Calmo'},{'label':'Brincalhão','value':'Brincalhão'},{'label':'Raivoso','value':'Raivoso'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
         ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
         html.H4('Cor:'),
         html.Div(children=[
@@ -26,6 +46,7 @@ def return_layout():
         dbc.Button('ADICIONAR',id='btn-cadpet-add',color='primary')     
     ]
         ,style = {
+            "height":"100%",
             "background-color" : "white",
             "padding":"20px"
         }

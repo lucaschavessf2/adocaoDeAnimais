@@ -46,11 +46,7 @@ class Conexao:
             nome TEXT,
             data_nascimento DATE,
             endereco TEXT,
-            imovel TEXT,
-            pessoas_na_casa INTEGER,
-            criancas INTEGER,
             telefone TEXT,
-            tempo_livre TEXT,
             FOREIGN KEY (id_login) REFERENCES login_usuarios(id)
         )
         """)
@@ -59,9 +55,28 @@ class Conexao:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_usuario INTEGER,
             especie TEXT,
-            estagio DATE,
+            estagio TEXT,
+            porte TEXT,
+            deficiencia TEXT,
+            criancas TEXT,
+            outros_animais TEXT,
+            temperamento,
             cor TEXT,
-            raca INTEGER,
+            raca TEXT,
+            FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+        )
+        """)
+        self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS adotantes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_usuario INTEGER,
+            especie TEXT,
+            estagio TEXT,
+            porte TEXT,
+            deficiencia TEXT,
+            criancas TEXT,
+            outros_animais TEXT,
+            temperamento,
             FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
         )
         """)
@@ -152,14 +167,14 @@ class Conexao:
             "nome":dados[2],
             "data":dados[3],
             "endereco":dados[4],
-            "imovel":dados[5],
-            "pessoas_na_casa":dados[6],
-            "criancas": dados[7],
-            "telefone": dados[8],
-            "tempo_livre":dados[9],
-
+            "telefone": dados[5],
         }
         return dados_usuario
 
-# c = Conexao()
-# print(c.consultar_dados("pets","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != 1"))
+
+if __name__ == '__main__':
+    print('x')
+    c = Conexao()
+    c.iniciar()
+    c.cursor.execute("DROP TABLE pets;")
+    c.encerrar()

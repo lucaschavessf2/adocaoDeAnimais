@@ -12,16 +12,23 @@ def gerar_cards(pets):
                     dbc.Card([
                         html.H4(f"Animal: {pet[2]}"),
                         html.H4(f"Estágio: {pet[3]}"),
-                        html.H4(f"Cor: {pet[4]}"),
-                        html.H4(f"Espécie: {pet[5]}"),
-                        html.H4(f"Responsável: {pet[8]}"),
+                        html.H4(f"Porte: {pet[4]}"),
+                        html.H4(f"Deficiência: {pet[5]}"),
+                        html.H4(f"Para crianças: {pet[6]}"),
+                        html.H4(f"Outros animais: {pet[7]}"),
+                        html.H4(f"Temperamento: {pet[8]}"),
+                        html.H4(f"Cor: {pet[9]}"),
+                        html.H4(f"Raça: {pet[10]}"),
+                        html.H4(f"Responsável: {pet[13]}"),
+                        html.H4(f"Endereço: {pet[15]}"),
+                        html.H4(f"Contato: {pet[16]}"),
                         dbc.Button(id={'type': 'btn-card-adotar', 'index': pet[0]},children='Adotar',style={'margin':'5px'})
                     ],style={"box-shadow": "2px 2px 10px 0px rgba(10, 9, 7, 0.10)","backgroundColor": "#DCDCDC","widht":'100%','height':'95%',"margin-bottom":'10px'})
                 ], md=4)
             cards.append(card)  
         if count ==3 or count >= qtd_pets:
             print(pet)
-            linha = dbc.Row(cards,style={'width':'100%','height':'60%'})
+            linha = dbc.Row(cards,style={'width':'100%','height':'65%'})
             linhas.append(linha)
             cards = []
             qtd_pets -= count
