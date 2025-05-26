@@ -5,7 +5,7 @@ from dash import dcc, ALL, ctx
 from datetime import datetime
 from db_conexao import Conexao
 from dash.dependencies import Input, Output, State
-from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante
+from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante, tela_pet_perdido
 
 #Função para verificar se é um email
 def verificar_email(email):
@@ -67,6 +67,9 @@ class Callbacks:
                 elif caminho == '/cadastrar-pet':
                     layout_interno =  tela_cad_pet.return_layout()
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
+                elif caminho == '/pets-perdidos':
+                    layout_interno =  tela_pet_perdido.return_layout()
+                    return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif caminho == '/perfil':
                     pets = self.db_conexao.consultar_dados("pets","*",f"where id_usuario == ?",(session_usuario['id'],))
                     layout_interno =  tela_perfil.return_layout(pets,session_usuario)
@@ -122,6 +125,17 @@ class Callbacks:
                     return ["Cadastro efetuado com sucesso"]
             else:
                 return dash.no_update
+        @self.app.callback([Output('span-cadpet-aviso','children', allow_duplicate=True)],[Input('btn-menu-perdidos','n_clicks'),
+        State('ri-cadpet-especie','value'),State('ri-cadpet-estagio','value'),State('ri-cadpet-porte','value'),State('ri-cadpet-deficiencia','value'),
+        State('ri-cadpet-criancas','value'),State('ri-cadpet-outros','value'),State('ri-cadpet-temperamento','value'),
+        State('input-cadpet-cor','value'),State('input-cadpet-raca','value'),State('session-usuario', 'data')],prevent_initial_call=True)
+        def __botao_cadastro_pet(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca,session_usuario):
+            if botao:
+                    self.db_conexao.inserir_dados("pets","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca))
+                    return ["Cadastro efetuado com sucesso"]
+            else:
+                return dash.no_update
+    
             
         @self.app.callback([Output('url','pathname', allow_duplicate=True),Output('span-cadadotante-aviso','children', allow_duplicate=True)],[Input('btn-cadadotante-add','n_clicks'),
         State('ri-cadadotante-especie','value'),State('ri-cadadotante-estagio','value'),State('ri-cadadotante-porte','value'),State('ri-cadadotante-deficiencia','value'),
