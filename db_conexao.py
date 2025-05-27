@@ -60,7 +60,7 @@ class Conexao:
             deficiencia TEXT,
             criancas TEXT,
             outros_animais TEXT,
-            temperamento,
+            temperamento TEXT,
             cor TEXT,
             raca TEXT,
             FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
@@ -76,7 +76,7 @@ class Conexao:
             deficiencia TEXT,
             criancas TEXT,
             outros_animais TEXT,
-            temperamento,
+            temperamento TEXT,
             FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
         )
         """)
@@ -161,20 +161,38 @@ class Conexao:
             return [False]
         
     def coletar_dados_usuario(self,id):
-        dados = self.consultar_dados("usuarios","*","where id_login = ?",(id,))[0]
-        dados_usuario = {
-            "id":dados[1],
-            "nome":dados[2],
-            "data":dados[3],
-            "endereco":dados[4],
-            "telefone": dados[5],
-        }
+        print(id)
+        # dados = self.consultar_dados("usuarios","*",f"as u left join adotantes as a where u.id == a.id_usuario and u.id_login == ?",(id,))
+        if self.consultar_dados("adotantes", "COUNT(*)", "where id_usuario = ?", (id,))[0][0] > 0:
+            dados = self.consultar_dados("usuarios","*",f"as u left join adotantes as a where u.id == a.id_usuario and u.id_login = ?",(id,))[0]
+            dados_usuario = {
+                "id":dados[1],
+                "nome":dados[2],
+                "data":dados[3],
+                "endereco":dados[4],
+                "telefone": dados[5],
+                "especie" : dados[8],
+                "estagio" : dados[9],
+                "porte" : dados[10],
+                "deficiencia" : dados[11],
+                "criancas" : dados[12],
+                "outros_animais" : dados[13],
+                "temperamento" : dados[14],
+            }
+        else:
+            dados = self.consultar_dados("usuarios","*","where id_login = ?",(id,))[0]
+            dados_usuario = {
+                "id":dados[1],
+                "nome":dados[2],
+                "data":dados[3],
+                "endereco":dados[4],
+                "telefone": dados[5],
+            }
+        print(dados_usuario)
         return dados_usuario
 
 
 if __name__ == '__main__':
     print('x')
     c = Conexao()
-    c.iniciar()
-    c.cursor.execute("DROP TABLE pets;")
-    c.encerrar()
+    print(c.consultar_dados("usuarios","*",f"as u left join adotantes as a where u.id == a.id_usuario and u.id_login = ?",(1,)))

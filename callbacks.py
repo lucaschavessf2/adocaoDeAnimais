@@ -5,7 +5,7 @@ from dash import dcc, ALL, ctx
 from datetime import datetime
 from db_conexao import Conexao
 from dash.dependencies import Input, Output, State
-from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante, tela_pet_perdido
+from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante, tela_pet_perdido, tela_meus_pets
 
 #Função para verificar se é um email
 def verificar_email(email):
@@ -71,8 +71,7 @@ class Callbacks:
                     layout_interno =  tela_pet_perdido.return_layout()
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif caminho == '/perfil':
-                    pets = self.db_conexao.consultar_dados("pets","*",f"where id_usuario == ?",(session_usuario['id'],))
-                    layout_interno =  tela_perfil.return_layout(pets,session_usuario)
+                    layout_interno =  tela_perfil.return_layout(session_usuario)
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif '/editar-pet/' in caminho:
                     id_pet = caminho.split('/')[2].split('$')[0]
@@ -80,6 +79,12 @@ class Callbacks:
                     pet = self.db_conexao.consultar_dados('pets','*','where id = ?',(id_pet,))[0]
                     layout_interno =  tela_edit_pet.return_layout(pet,id_usuario,session_usuario['id'])
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
+                elif caminho == '/meus-pets':
+                    pets = self.db_conexao.consultar_dados("pets","*",f"where id_usuario == ?",(session_usuario['id'],))
+                    layout_interno =  tela_meus_pets.return_layout(pets,session_usuario)
+                    return tela_menu_dois.return_layout(layout_interno,session_usuario)    
+                    
+                
                 return tela_menu.return_layout()
             else:
                 return dcc.Location(href="/entrar", id="redirect-login")
@@ -125,25 +130,27 @@ class Callbacks:
                     return ["Cadastro efetuado com sucesso"]
             else:
                 return dash.no_update
-        @self.app.callback([Output('span-cadpet-aviso','children', allow_duplicate=True)],[Input('btn-menu-perdidos','n_clicks'),
-        State('ri-cadpet-especie','value'),State('ri-cadpet-estagio','value'),State('ri-cadpet-porte','value'),State('ri-cadpet-deficiencia','value'),
-        State('ri-cadpet-criancas','value'),State('ri-cadpet-outros','value'),State('ri-cadpet-temperamento','value'),
-        State('input-cadpet-cor','value'),State('input-cadpet-raca','value'),State('session-usuario', 'data')],prevent_initial_call=True)
-        def __botao_cadastro_pet(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca,session_usuario):
+        @self.app.callback([Output('span-perdidos-aviso','children', allow_duplicate=True)],[Input('btn-menu-perdidos','n_clicks'),
+        State('ri-perdidos-especie','value'),State('ri-perdidos-estagio','value'),State('ri-perdidos-porte','value'),State('ri-perdidos-deficiencia','value'),
+        State('ri-perdidos-criancas','value'),State('ri-perdidos-outros','value'),State('ri-perdidos-temperamento','value'),
+        State('input-perdidos-cor','value'),State('input-perdidos-raca','value'),State('session-usuario', 'data')],prevent_initial_call=True)
+        def __botao_cadastro_perdidos(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca,session_usuario):
             if botao:
-                    self.db_conexao.inserir_dados("pets","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca))
-                    return ["Cadastro efetuado com sucesso"]
+                    # self.db_conexao.inserir_dados("pets","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca))
+                    # return ["Cadastro efetuado com sucesso"]
+                    return dash.no_update
             else:
                 return dash.no_update
     
             
-        @self.app.callback([Output('url','pathname', allow_duplicate=True),Output('span-cadadotante-aviso','children', allow_duplicate=True)],[Input('btn-cadadotante-add','n_clicks'),
+        @self.app.callback([Output('url','pathname', allow_duplicate=True),Output('span-cadadotante-aviso','children', allow_duplicate=True),Output('session-usuario','data', allow_duplicate=True)],[Input('btn-cadadotante-add','n_clicks'),
         State('ri-cadadotante-especie','value'),State('ri-cadadotante-estagio','value'),State('ri-cadadotante-porte','value'),State('ri-cadadotante-deficiencia','value'),
         State('ri-cadadotante-criancas','value'),State('ri-cadadotante-outros','value'),State('ri-cadadotante-temperamento','value'),State('session-usuario', 'data')],prevent_initial_call=True)
         def __botao_cadastro_adotante(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,session_usuario):
             if botao:
-                    self.db_conexao.inserir_dados("adotantes","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento))
-                    return ["/buscar-pet/","Cadastro efetuado com sucesso"]
+                self.db_conexao.inserir_dados("adotantes","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento))
+                dados_usuario = self.db_conexao.coletar_dados_usuario(session_usuario["id"])
+                return ["/buscar-pet/","Cadastro efetuado com sucesso",dados_usuario]
             else:
                 return dash.no_update
             

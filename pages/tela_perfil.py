@@ -1,37 +1,41 @@
 from dash import html, dcc
 import dash_bootstrap_components as dbc
-def gerar_cards(pets):
-    linhas = []
-    cards = []
-    count = 1
-    qtd_pets = len(pets)
-    for i, pet in enumerate(pets):
-        if count <= 3:
-            card = dbc.Col([
-                    dbc.Card([
-                        html.H4(f"Animal: {pet[2]}"),
-                        html.H4(f"Estágio: {pet[3]}"),
-                        html.H4(f"Cor: {pet[4]}"),
-                        html.H4(f"Espécie: {pet[5]}"),
-                        dbc.Button(id={'type': 'btn-card-editar', 'index': pet[0]},children='Editar',style={'margin':'5px'}),
-                        dbc.Button(id={'type': 'btn-card-excluir', 'index': pet[0]},children='Excluir',style={'margin':'5px','background-color':'red'})
-                    ],style={"box-shadow": "2px 2px 10px 0px rgba(10, 9, 7, 0.10)","backgroundColor": "#DCDCDC","widht":'100%','height':'95%',"margin-bottom":'10px'})
-                ], md=4)
-            cards.append(card)  
-        if count ==3 or count >= qtd_pets:
-            print(pet)
-            linha = dbc.Row(cards,style={'width':'100%','height':'60%'})
-            linhas.append(linha)
-            cards = []
-            qtd_pets -= count
-            count = 0
-        count += 1
-    return linhas
 
-def return_layout(pets,session_usuario):
+def return_layout_preferencias(session_usuario):
+    if("especie" in session_usuario.keys()):
+        layout =html.Div(children=[
+                html.Div(children=[
+                html.H3("SUAS PREFERÊNCIAS", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
+
+                html.H4("Animal que deseja:", style = {'color':'black'}),
+                html.H6(id='h6-perfil-especie',children=session_usuario['especie']),
+
+                html.H4("Estágio da vida do animal desejado:", style = {'color': 'black'}),
+                html.H6(id='h6-perfil-estagio',children=session_usuario['estagio']),
+                
+                html.H4("Porte do Animal desejado: "),
+                html.H6(id='h6-perfil-porte',children=session_usuario['porte']),
+
+                html.H4("Deseja que o animal possua alguma deficiência?"),
+                html.H6(id='h6-perfil-deficiencia',children=session_usuario['deficiencia']),
+        
+                html.H4("Quer que o animal seja adaptado a crianças? "),
+                html.H6(id='h6-perfil-criancas',children=session_usuario['criancas']),
+                
+                html.H4("Quer que o animal seja adaptado a outros animais? "),
+                html.H6(id='h6-perfil-outros_animais',children=session_usuario['outros_animais']),
+                
+                html.H4("Qual o temperamento esperado do Animal? "),
+                html.H6(id='h6-perfil-temperamento',children=session_usuario['temperamento']),
+                
+                ])
+            ])
+        return layout
+    else:
+        return html.Div()
+def return_layout(session_usuario):
     print(session_usuario)
-    cards = gerar_cards(pets)
-    print(pets)
+    layout_preferencias = return_layout_preferencias(session_usuario)
     layout = dbc.Card(
         dbc.CardBody([
             html.Div(children=[
@@ -43,20 +47,16 @@ def return_layout(pets,session_usuario):
 
                 html.H4("Data de nascimento:", style = {'color': 'black'}),
                 html.H6(id='h6-perfil-data',children=session_usuario['data']),
+                
+                html.H4("Endereço: "),
+                html.H6(id='h6-perfil-endereco',children=session_usuario['endereco']),
 
                 html.H4("Telefone:"),
                 html.H6(id='h6-perfil-telefone',children=session_usuario['telefone']),
-
-                # html.H4("Email:"),
-                # html.H6(id='h6-perfil-email',children="juininho@g.c"),
         
                 ])
             ]),
-            html.Div(children=[
-                html.H3("MEUS PETS", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
-                html.Div(children=cards)
-            ]
-            )
+            layout_preferencias
             
         ],style={'height':'100%','display':'inline-table','width':'100%'}),
         className="shadow-sm p-4",

@@ -8,7 +8,7 @@ from callbacks import Callbacks
 if __name__ == "__main__":
     #Inicia a aplicação
     app = dash.Dash(__name__,external_stylesheets=[dbc.themes.DARKLY], suppress_callback_exceptions=True)
-    #Utiliza o tamplate padrão para a tela
+    #Utiliza o template padrão para a tela
     app.layout= tela_padrao.return_layout()
     app.config.suppress_callback_exceptions = True
     #Inicia a classe e os callbacks
