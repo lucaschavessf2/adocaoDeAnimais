@@ -176,10 +176,12 @@ class Callbacks:
                 triggered_id = ctx.triggered_id
                 if triggered_id:
                     id_pet = triggered_id['index']
-                    adotado = self.db_conexao.consultar_dados('pets','*','where id = ?',(id_pet,))
-                    self.db_conexao.inserir_dados('adotados',"(id_usuario,especie,estagio,cor,raca)",(session_usuario['id'],)+(tuple(list(adotado[0])[2:])))
+                    adotado = self.db_conexao.consultar_dados('pets','*','where id = ?',(id_pet,))[0]
+                    print(adotado)
+                    valores_adotado = (adotado[2],adotado[3],adotado[9],adotado[10])
+                    self.db_conexao.inserir_dados('adotados',"(id_usuario,especie,estagio,cor,raca)",(session_usuario['id'],)+  (valores_adotado))
                     self.db_conexao.deletar_dados('pets','WHERE id = ?',(id_pet,))
-                    print((session_usuario['id'],)+(tuple(list(adotado[0])[2:])))
+                    # print((session_usuario['id'],)+(tuple(list(adotado[0])[2:])))
                     return ['/buscar-pet/']
             return dash.no_update
         
