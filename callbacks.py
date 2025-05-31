@@ -5,7 +5,7 @@ from dash import dcc, ALL, ctx
 from datetime import datetime
 from db_conexao import Conexao
 from dash.dependencies import Input, Output, State
-from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante, tela_pet_perdido, tela_meus_pets
+from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante, tela_pet_perdido, tela_meus_pets, tela_buscar_perdidos
 
 #Função para verificar se é um email
 def verificar_email(email):
@@ -64,6 +64,15 @@ class Callbacks:
                     else:
                         layout_interno = tela_cad_adotante.return_layout()
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
+                
+                if '/buscar-perdidos/' in caminho:
+
+                    busca = caminho.split('/')[2]
+                    print(busca)
+                    perdidos = self.db_conexao.consultar_dados("perdidos","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != ? and (especie like '%{busca}%')",(session_usuario['id'],))
+                    layout_interno = tela_buscar_perdidos.return_layout(perdidos)
+                    return tela_menu_dois.return_layout(layout_interno,session_usuario)
+                
                 elif caminho == '/cadastrar-pet':
                     layout_interno =  tela_cad_pet.return_layout()
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
@@ -130,15 +139,15 @@ class Callbacks:
                     return ["Cadastro efetuado com sucesso"]
             else:
                 return dash.no_update
-        @self.app.callback([Output('span-perdidos-aviso','children', allow_duplicate=True)],[Input('btn-menu-perdidos','n_clicks'),
+        @self.app.callback([Output('span-perdidos-aviso','children', allow_duplicate=True)],[Input('btn-perdidos-add','n_clicks'),
         State('ri-perdidos-especie','value'),State('ri-perdidos-estagio','value'),State('ri-perdidos-porte','value'),State('ri-perdidos-deficiencia','value'),
         State('ri-perdidos-criancas','value'),State('ri-perdidos-outros','value'),State('ri-perdidos-temperamento','value'),
         State('input-perdidos-cor','value'),State('input-perdidos-raca','value'),State('session-usuario', 'data')],prevent_initial_call=True)
         def __botao_cadastro_perdidos(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca,session_usuario):
             if botao:
-                    # self.db_conexao.inserir_dados("pets","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca))
-                    # return ["Cadastro efetuado com sucesso"]
-                    return dash.no_update
+                    self.db_conexao.inserir_dados("perdidos","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca))
+                    return ["Cadastro efetuado com sucesso"]
+                    
             else:
                 return dash.no_update
     
@@ -167,6 +176,15 @@ class Callbacks:
                     if pesquisa == None:
                         pesquisa = ""
                     return [f"/buscar-pet/{pesquisa}"]
+            else:
+                return dash.no_update
+            
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input('btn-perdidos-busca','n_clicks'),State('input-perdidos-busca','value')],prevent_initial_call=True)
+        def __botao_pesquisa_perdidos(botao,pesquisa):
+            if botao:
+                    if pesquisa == None:
+                        pesquisa = ""
+                    return [f"/buscar-perdidos/{pesquisa}"]
             else:
                 return dash.no_update
             

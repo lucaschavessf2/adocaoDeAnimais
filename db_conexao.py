@@ -67,6 +67,22 @@ class Conexao:
         )
         """)
         self.cursor.execute("""
+            CREATE TABLE IF NOT EXISTS perdidos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_usuario INTEGER,
+            especie TEXT,
+            estagio TEXT,
+            porte TEXT,
+            deficiencia TEXT,
+            criancas TEXT,
+            outros_animais TEXT,
+            temperamento TEXT,
+            cor TEXT,
+            raca TEXT,
+            FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+        )
+        """)
+        self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS adotantes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_usuario INTEGER,
