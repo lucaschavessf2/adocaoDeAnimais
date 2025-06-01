@@ -17,18 +17,6 @@ def return_layout():
         html.Div(children=[
             dbc.RadioItems(id='ri-perdidos-porte',options=[{'label':'Pequeno','value':'Pequeno'},{'label':'Médio','value':'Médio'},{'label':'Grande','value':'Grande'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
         ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
-        html.H4('Deficiência:'),
-        html.Div(children=[
-            dbc.RadioItems(id='ri-perdidos-deficiencia',options=[{'label':'Sim','value':'Sim'},{'label':'Não','value':'Não'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
-        ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
-        html.H4('Para crianças:'),
-        html.Div(children=[
-            dbc.RadioItems(id='ri-perdidos-criancas',options=[{'label':'Sim','value':'Sim'},{'label':'Não','value':'Não'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
-        ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
-        html.H4('Pode viver com outros animais:'),
-        html.Div(children=[
-            dbc.RadioItems(id='ri-perdidos-outros',options=[{'label':'Sim','value':'Sim'},{'label':'Não','value':'Não'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
-        ],style={'display':'flex', 'align-items': 'center','justify-itemns':'center'}),
         html.H4('Temperamento:'),
         html.Div(children=[
             dbc.RadioItems(id='ri-perdidos-temperamento',options=[{'label':'Calmo','value':'Calmo'},{'label':'Brincalhão','value':'Brincalhão'},{'label':'Raivoso','value':'Raivoso'}],inline=True,inputStyle={"color": "black","background-color":'grey'}),
@@ -40,6 +28,18 @@ def return_layout():
         html.H4('Raça:'),
         html.Div(children=[
             dbc.Input(id='input-perdidos-raca',placeholder="Insira a Raça do PET",type='text', size="sm"),
+        ],style={'display':'flex'}),
+        html.H4('Nome:'),
+        html.Div(children=[
+            dbc.Input(id='input-perdidos-nome',placeholder="Insira o nome do seu PET",type='text', size="sm"),
+        ],style={'display':'flex'}),
+        html.H4('Descrição do animal:'),
+        html.Div(children=[
+            dbc.Input(id='input-perdidos-descricao',placeholder="Insira uma descrição do seu PET",type='text', size="sm"),
+        ],style={'display':'flex'}),
+        html.H4('Recompensa:'),
+        html.Div(children=[
+            dbc.Input(id='input-perdidos-recompensa',placeholder="Insira uma recompensa",type='text', size="sm"),
         ],style={'display':'flex'}),
         html.Hr(style={'margin-top': '3px','margin-bottom': '10px'}),
         html.Span(id='span-perdidos-aviso',style={'color':'#fd7e14','text-aling':'center'}),

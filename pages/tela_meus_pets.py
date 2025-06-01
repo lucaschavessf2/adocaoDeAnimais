@@ -1,7 +1,7 @@
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 
-def gerar_cards(pets):
+def gerar_cards(pets,tipo):
     linhas = []
     cards = []
     count = 1
@@ -14,8 +14,8 @@ def gerar_cards(pets):
                         html.H4(f"Estágio: {pet[3]}"),
                         html.H4(f"Cor: {pet[4]}"),
                         html.H4(f"Espécie: {pet[5]}"),
-                        dbc.Button(id={'type': 'btn-card-editar', 'index': pet[0]},children='Editar',style={'margin':'5px'}),
-                        dbc.Button(id={'type': 'btn-card-excluir', 'index': pet[0]},children='Excluir',style={'margin':'5px','background-color':'red'})
+                        dbc.Button(id={'type': f'btn-{tipo}-editar', 'index': pet[0]},children='Editar',style={'margin':'5px'}),
+                        dbc.Button(id={'type': f'btn-{tipo}-excluir', 'index': pet[0]},children='Excluir',style={'margin':'5px','background-color':'red'})
                     ],style={"box-shadow": "2px 2px 10px 0px rgba(10, 9, 7, 0.10)","backgroundColor": "#DCDCDC","widht":'100%','height':'95%',"margin-bottom":'10px'})
                 ], md=4)
             cards.append(card)  
@@ -29,9 +29,9 @@ def gerar_cards(pets):
         count += 1
     return linhas
 
-def return_layout(pets,session_usuario):
+def return_layout(pets,tipo,session_usuario):
     print(session_usuario)
-    cards = gerar_cards(pets)
+    cards = gerar_cards(pets,tipo)
     print(pets)
     layout = dbc.Card(
         dbc.CardBody([

@@ -73,12 +73,12 @@ class Conexao:
             especie TEXT,
             estagio TEXT,
             porte TEXT,
-            deficiencia TEXT,
-            criancas TEXT,
-            outros_animais TEXT,
             temperamento TEXT,
             cor TEXT,
             raca TEXT,
+            nome TEXT,
+            descricao TEXT,
+            recompensa TEXT,                                
             FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
         )
         """)
@@ -211,4 +211,7 @@ class Conexao:
 if __name__ == '__main__':
     print('x')
     c = Conexao()
-    print(c.consultar_dados("usuarios","*",f"as u left join adotantes as a where u.id == a.id_usuario and u.id_login = ?",(1,)))
+    c.iniciar()
+    c.cursor.execute("SELECT * FROM perdidos")
+    c.encerrar()
+    print("acabou")

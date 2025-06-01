@@ -5,7 +5,7 @@ from dash import dcc, ALL, ctx
 from datetime import datetime
 from db_conexao import Conexao
 from dash.dependencies import Input, Output, State
-from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante, tela_pet_perdido, tela_meus_pets, tela_buscar_perdidos
+from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante, tela_pet_perdido, tela_meus_pets, tela_buscar_perdidos,tela_edit_perdidos
 
 #Função para verificar se é um email
 def verificar_email(email):
@@ -88,6 +88,13 @@ class Callbacks:
                     pet = self.db_conexao.consultar_dados('pets','*','where id = ?',(id_pet,))[0]
                     layout_interno =  tela_edit_pet.return_layout(pet,id_usuario,session_usuario['id'])
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
+                elif '/editar-perdidos/' in caminho:
+                    id_pet = caminho.split('/')[2].split('$')[0]
+                    id_usuario = caminho.split('/')[2].split('$')[1]
+                    pet = self.db_conexao.consultar_dados('perdidos','*','where id = ?',(id_pet,))[0]
+                    print(pet)
+                    layout_interno =  tela_edit_perdidos.return_layout(pet,id_usuario,session_usuario['id'])
+                    return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif  '/meus-pets' in caminho:
                     tipo = caminho.split('/')[2]
                     print(tipo)
@@ -96,8 +103,9 @@ class Callbacks:
                     elif tipo == "perdidos":
                         pets = self.db_conexao.consultar_dados("perdidos","*",f"where id_usuario == ?",(session_usuario['id'],))
                     else:
+                        tipo = "card"
                         pets = self.db_conexao.consultar_dados("pets","*",f"where id_usuario == ?",(session_usuario['id'],))
-                    layout_interno =  tela_meus_pets.return_layout(pets,session_usuario)
+                    layout_interno =  tela_meus_pets.return_layout(pets,tipo,session_usuario)
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)    
                     
                 
@@ -147,14 +155,13 @@ class Callbacks:
             else:
                 return dash.no_update
         @self.app.callback([Output('span-perdidos-aviso','children', allow_duplicate=True)],[Input('btn-perdidos-add','n_clicks'),
-        State('ri-perdidos-especie','value'),State('ri-perdidos-estagio','value'),State('ri-perdidos-porte','value'),State('ri-perdidos-deficiencia','value'),
-        State('ri-perdidos-criancas','value'),State('ri-perdidos-outros','value'),State('ri-perdidos-temperamento','value'),
-        State('input-perdidos-cor','value'),State('input-perdidos-raca','value'),State('session-usuario', 'data')],prevent_initial_call=True)
-        def __botao_cadastro_perdidos(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca,session_usuario):
+        State('ri-perdidos-especie','value'),State('ri-perdidos-estagio','value'),State('ri-perdidos-porte','value'),
+        State('ri-perdidos-temperamento','value'),State('input-perdidos-cor','value'),State('input-perdidos-raca','value'),
+        State('input-perdidos-nome','value'),State('input-perdidos-descricao','value'),State('input-perdidos-recompensa','value'),State('session-usuario', 'data')],prevent_initial_call=True)
+        def __botao_cadastro_perdidos(botao,especie,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa,session_usuario):
             if botao:
-                    self.db_conexao.inserir_dados("perdidos","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca))
+                    self.db_conexao.inserir_dados("perdidos","(id_usuario,especie,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa)",(session_usuario['id'],especie,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa))
                     return ["Cadastro efetuado com sucesso"]
-                    
             else:
                 return dash.no_update
     
@@ -217,7 +224,17 @@ class Callbacks:
                 if triggered_id:
                     id_pet = triggered_id['index']
                     self.db_conexao.deletar_dados('pets','WHERE id = ?',(id_pet,))
-                    return ['/perfil']
+                    return ['/meus-pets/']
+            return dash.no_update
+        
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input({'type': 'btn-perdidos-excluir', 'index': ALL},'n_clicks')],prevent_initial_call=True)
+        def __botao_excluir_perdidos(botao):
+            if set(botao)!={None}:
+                triggered_id = ctx.triggered_id
+                if triggered_id:
+                    id_pet = triggered_id['index']
+                    self.db_conexao.deletar_dados('perdidos','WHERE id = ?',(id_pet,))
+                    return ['/meus-pets/perdidos']
             return dash.no_update
         
         @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input({'type': 'btn-card-editar', 'index': ALL},'n_clicks')],prevent_initial_call=True)
@@ -231,15 +248,15 @@ class Callbacks:
                     return [f'/editar-pet/{id_pet}${id_usuario}']
             return dash.no_update
         
-        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input({'type': 'btn-card-editar-perdidos', 'index': ALL},'n_clicks')],prevent_initial_call=True)
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input({'type': 'btn-perdidos-editar', 'index': ALL},'n_clicks')],prevent_initial_call=True)
         def __botao_editar_perdido(botao):
             if set(botao)!={None}:
                 triggered_id = ctx.triggered_id
                 if triggered_id:
                     id_perdidos = triggered_id['index']
-                    adotado = self.db_conexao.consultar_dados('perdidos','*','where id = ?',(id_pet,))
+                    adotado = self.db_conexao.consultar_dados('perdidos','*','where id = ?',(id_perdidos,))
                     id_usuario = adotado[0][1]
-                    return [f'/editar-pet/{id_pet}${id_usuario}']
+                    return [f'/editar-perdidos/{id_perdidos}${id_usuario}']
             return dash.no_update
         
         
@@ -249,6 +266,18 @@ class Callbacks:
                     id_pet = caminho.split('/')[2].split('$')[0]
                     self.db_conexao.atualizar_dados("pets","(estagio,cor,raca)",(estagio,cor,raca),f"WHERE id ={id_pet}")
                     return ["/perfil"]
+            else:
+                return dash.no_update
+        
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input('btn-editperdidos-finalizar','n_clicks'),State('url','pathname'),
+                            State('ri-editperdidos-estagio','value'),State('ri-editperdidos-porte','value'),
+        State('ri-editperdidos-temperamento','value'),State('input-editperdidos-cor','value'),State('input-editperdidos-raca','value'),
+        State('input-editperdidos-nome','value'),State('input-editperdidos-descricao','value'),State('input-editperdidos-recompensa','value')],prevent_initial_call=True)
+        def __botao_atualizar_perdido(botao,caminho,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa):
+            if botao:
+                    id_pet = caminho.split('/')[2].split('$')[0]
+                    self.db_conexao.atualizar_dados("perdidos","(estagio,porte,temperamento,cor,raca,nome,descricao,recompensa)",(estagio,porte,temperamento,cor,raca,nome,descricao,recompensa),f"WHERE id ={id_pet}")
+                    return ["/meus-pets/perdidos"]
             else:
                 return dash.no_update
 
