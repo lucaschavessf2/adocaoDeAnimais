@@ -27,7 +27,10 @@ def return_layout_preferencias(session_usuario):
                 
                 html.H4("Qual o temperamento esperado do Animal? "),
                 html.H6(id='h6-perfil-temperamento',children=session_usuario['temperamento']),
-                
+
+                html.Div(
+                   dbc.Button("Alterar Preferências", id="btn-preferencia-editar",href="/tela-editar-preferencia")
+                )
                 ])
             ])
         return layout
@@ -36,8 +39,7 @@ def return_layout_preferencias(session_usuario):
 def return_layout(session_usuario):
     print(session_usuario)
     layout_preferencias = return_layout_preferencias(session_usuario)
-    layout = dbc.Card(
-        dbc.CardBody([
+    layout = dbc.Card(children=[
             html.Div(children=[
                 html.Div(children=[
                 html.H3("SEU PERFIL", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
@@ -53,13 +55,17 @@ def return_layout(session_usuario):
 
                 html.H4("Telefone:"),
                 html.H6(id='h6-perfil-telefone',children=session_usuario['telefone']),
-        
+
+                html.Div(
+                    dbc.Button("Alterar Conta", id="btn-perfil-editar", href='/tela-editar-perfil')
+                )
                 ])
             ]),
-            layout_preferencias
-            
-        ],style={'height':'100%','display':'inline-table','width':'100%'}),
-        className="shadow-sm p-4",
+            layout_preferencias,
+
+            html.Div(children=[
+                dbc.Button(children="Excluir Conta", id = "btn-perfil-excluir")
+            ])],
 
         style={
             "width": "100%",
