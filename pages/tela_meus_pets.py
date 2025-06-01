@@ -37,9 +37,14 @@ def return_layout(pets,session_usuario):
         dbc.CardBody([
             html.Div(children=[
                 html.H3("MEUS PETS", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
+                html.Div(children=[
+                    dbc.Button("Para adoção",href="/meus-pets/para-adocao",style={"margin":"10px"}), 
+                    dbc.Button("Adotados",href="/meus-pets/adotados",style={"margin":"10px"}),
+                    dbc.Button("Perdidos",href="/meus-pets/perdidos", style={"margin":"10px"}),
+                ]),
                 html.Div(children=cards)
             ]
-            )
+            ) 
             
         ],style={'height':'100%','display':'inline-table','width':'100%'}),
         className="shadow-sm p-4",

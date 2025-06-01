@@ -88,8 +88,15 @@ class Callbacks:
                     pet = self.db_conexao.consultar_dados('pets','*','where id = ?',(id_pet,))[0]
                     layout_interno =  tela_edit_pet.return_layout(pet,id_usuario,session_usuario['id'])
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
-                elif caminho == '/meus-pets':
-                    pets = self.db_conexao.consultar_dados("pets","*",f"where id_usuario == ?",(session_usuario['id'],))
+                elif  '/meus-pets' in caminho:
+                    tipo = caminho.split('/')[2]
+                    print(tipo)
+                    if tipo == "adotados":
+                        pets = self.db_conexao.consultar_dados("adotados","*",f"where id_usuario == ?",(session_usuario['id'],))
+                    elif tipo == "perdidos":
+                        pets = self.db_conexao.consultar_dados("perdidos","*",f"where id_usuario == ?",(session_usuario['id'],))
+                    else:
+                        pets = self.db_conexao.consultar_dados("pets","*",f"where id_usuario == ?",(session_usuario['id'],))
                     layout_interno =  tela_meus_pets.return_layout(pets,session_usuario)
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)    
                     
@@ -223,6 +230,18 @@ class Callbacks:
                     id_usuario = adotado[0][1]
                     return [f'/editar-pet/{id_pet}${id_usuario}']
             return dash.no_update
+        
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input({'type': 'btn-card-editar-perdidos', 'index': ALL},'n_clicks')],prevent_initial_call=True)
+        def __botao_editar_perdido(botao):
+            if set(botao)!={None}:
+                triggered_id = ctx.triggered_id
+                if triggered_id:
+                    id_perdidos = triggered_id['index']
+                    adotado = self.db_conexao.consultar_dados('perdidos','*','where id = ?',(id_pet,))
+                    id_usuario = adotado[0][1]
+                    return [f'/editar-pet/{id_pet}${id_usuario}']
+            return dash.no_update
+        
         
         @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input('btn-editpet-finalizar','n_clicks'),State('url','pathname'),State('ri-editpet-estagio','value'),State('input-editpet-cor','value'),State('input-editpet-raca','value')],prevent_initial_call=True)
         def __botao_atualizar_pet(botao,caminho,estagio,cor,raca):
