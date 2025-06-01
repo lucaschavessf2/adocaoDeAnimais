@@ -37,27 +37,14 @@ def gerar_cards(perdidos):
     return linhas
 def return_layout(perdidos):
     cards = gerar_cards(perdidos)
-    layout = dbc.Card(
-        dbc.CardBody([
-            html.H3("PETS PERDIDOS", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
-            html.Hr(style={'width':'100%'}),
-            html.Div(children=[
-                dbc.Input(id='input-perdidos-busca', placeholder="Pesquise aqui seu próximo animal", type='text', size="sm", className="mb-3"),
-                dbc.Button(id='btn-perdidos-busca',children='Pesquisar',style={'margin-left':'5px','height':'68%'}, size="sm")
-            ],style={'display':'flex','width':'100%'}),
-            html.Div(id='div-rec-itens',children=cards,style={'overflowY': 'auto','width':'100%','height':'90%'}),
+    layout = dbc.Card(children=[
+        html.H3("PETS PERDIDOS", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
+        html.Hr(style={'width':'100%'}),
+        html.Div(children=[
+            dbc.Input(id='input-perdidos-busca', placeholder="Pesquise aqui seu próximo animal", type='text', size="sm", className="mb-3"),
+            dbc.Button(id='btn-perdidos-busca',children='Pesquisar',style={'margin-left':'5px','height':'68%'}, size="sm")
+        ],style={'display':'flex','width':'100%'}),
+        html.Div(id='div-rec-itens',children=cards,style={'overflowY': 'auto','width':'100%','height':'90%'}),
 
-            
-
-
-        ],style={'height':'100%','display':'flex','width':'100%','flex-wrap':'wrap'}),
-        className="shadow-sm p-4",
-
-        style={
-            "width": "100%",
-            "height":"100%",
-            "borderRadius": "12px",
-            "backgroundColor": "#f8f9fa"
-        }
-    )
+    ],style={"width": "100%","height":"100%","borderRadius": "12px","backgroundColor": "#f8f9fa","padding":"20px"})
     return layout

@@ -20,7 +20,7 @@ class Conexao:
 
     #Função responsável por se conectar ao banco
     def iniciar(self):
-        self.conn = sqlite3.connect("database/adopet.db")
+        self.conn = sqlite3.connect("database/petmatch.db")
         self.cursor = self.conn.cursor()
 
     #Função que finaliza o comando no banco e encerra a conexão
@@ -45,7 +45,8 @@ class Conexao:
             id_login INTEGER,
             nome TEXT,
             data_nascimento DATE,
-            endereco TEXT,
+            cep TEXT,
+            localizacao TEXT,
             telefone TEXT,
             FOREIGN KEY (id_login) REFERENCES login_usuarios(id)
         )
@@ -176,6 +177,32 @@ class Conexao:
         else:
             return [False]
         
+    def recomendar_pets(self,id_adotante):
+        self.iniciar()
+        self.cursor.execute("SELECT especie, estagio, porte, deficiencia, criancas, outros_animais, temperamento FROM adotantes WHERE id_usuario = ?", (id_adotante,))
+        adotante = self.cursor.fetchone()
+        print(adotante)
+        if adotante:
+            sql = f"""
+            SELECT * FROM (SELECT 
+                pets.*, 
+                (
+                    (CASE WHEN pets.especie = ? THEN 5 ELSE 0 END) +
+                    (CASE WHEN pets.estagio = ? THEN 3 ELSE 0 END) +
+                    (CASE WHEN pets.porte = ? THEN 2 ELSE 0 END) +
+                    (CASE WHEN pets.deficiencia = ? THEN 1 ELSE 0 END) +
+                    (CASE WHEN pets.criancas = ? THEN 1 ELSE 0 END) +
+                    (CASE WHEN pets.outros_animais = ? THEN 1 ELSE 0 END) +
+                    (CASE WHEN pets.temperamento = ? THEN 1 ELSE 0 END)
+                ) AS score
+            FROM pets) as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != {id_adotante}
+            ORDER BY score DESC
+            """
+
+            self.cursor.execute(sql, adotante)
+            recomendacoes = self.cursor.fetchall()
+            self.encerrar()
+            return recomendacoes
     def coletar_dados_usuario(self,id):
         print(id)
         # dados = self.consultar_dados("usuarios","*",f"as u left join adotantes as a where u.id == a.id_usuario and u.id_login == ?",(id,))
@@ -185,15 +212,16 @@ class Conexao:
                 "id":dados[1],
                 "nome":dados[2],
                 "data":dados[3],
-                "endereco":dados[4],
-                "telefone": dados[5],
-                "especie" : dados[8],
-                "estagio" : dados[9],
-                "porte" : dados[10],
-                "deficiencia" : dados[11],
-                "criancas" : dados[12],
-                "outros_animais" : dados[13],
-                "temperamento" : dados[14],
+                "cep":dados[4],
+                "localizacao":dados[5],
+                "telefone": dados[6],
+                "especie" : dados[9],
+                "estagio" : dados[10],
+                "porte" : dados[11],
+                "deficiencia" : dados[12],
+                "criancas" : dados[13],
+                "outros_animais" : dados[14],
+                "temperamento" : dados[15],
             }
         else:
             dados = self.consultar_dados("usuarios","*","where id_login = ?",(id,))[0]
@@ -201,8 +229,10 @@ class Conexao:
                 "id":dados[1],
                 "nome":dados[2],
                 "data":dados[3],
-                "endereco":dados[4],
-                "telefone": dados[5],
+                "cep":dados[4],
+                "localizacao":dados[5],
+                "telefone": dados[6],
+                
             }
         print(dados_usuario)
         return dados_usuario
@@ -212,6 +242,32 @@ if __name__ == '__main__':
     print('x')
     c = Conexao()
     c.iniciar()
-    c.cursor.execute("SELECT * FROM perdidos")
-    c.encerrar()
-    print("acabou")
+    id_adotante = 3
+    c.cursor.execute("SELECT especie, estagio, porte, deficiencia, criancas, outros_animais, temperamento FROM adotantes WHERE id_usuario = ?", (id_adotante,))
+    adotante = c.cursor.fetchone()
+    print(adotante)
+    if adotante:
+        sql = f"""
+        SELECT * FROM (SELECT 
+            pets.*, 
+            (
+                (CASE WHEN pets.especie = ? THEN 5 ELSE 0 END) +
+                (CASE WHEN pets.estagio = ? THEN 3 ELSE 0 END) +
+                (CASE WHEN pets.porte = ? THEN 2 ELSE 0 END) +
+                (CASE WHEN pets.deficiencia = ? THEN 1 ELSE 0 END) +
+                (CASE WHEN pets.criancas = ? THEN 1 ELSE 0 END) +
+                (CASE WHEN pets.outros_animais = ? THEN 1 ELSE 0 END) +
+                (CASE WHEN pets.temperamento = ? THEN 1 ELSE 0 END)
+            ) AS score
+        FROM pets) as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != {id_adotante} ORDER BY score DESC
+        """
+
+        c.cursor.execute(sql, adotante)
+        recomendacoes = c.cursor.fetchall()
+
+        for pet in recomendacoes:
+            print(f"Pet ID {pet[0]} - Score: {pet[11]}")
+            print(pet)
+
+    else:
+        print("Adotante não encontrado")

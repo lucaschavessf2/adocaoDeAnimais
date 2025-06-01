@@ -30,9 +30,9 @@ def return_layout(layout_interno,session_usuario):
                 ], md=2),
                 dbc.Col(children=[
                     html.Div(id='tela',children=[layout_interno],style={'height':'100%'}),
-                ], md=10)
-            ],style={'height':'98%','width':'98%'})   
-    ],style={'height':'98%','width':'98%'})
+                ], md=10,style={'height':'100%'})
+            ],style={'height':'100%','width':'98%'})   
+    ],style={'height':'100%','width':'98%'})
 
         
     return layout

@@ -41,6 +41,7 @@ def return_layout():
         html.Div(children=[
             dbc.Input(id='input-cadpet-raca',placeholder="Insira a Raça do PET",type='text', size="sm"),
         ],style={'display':'flex'}),
+        dcc.Upload(id='upload-image',children=html.Button('Upload de Imagem'),multiple=False),
         html.Hr(style={'margin-top': '3px','margin-bottom': '10px'}),
         html.Span(id='span-cadpet-aviso',style={'color':'#fd7e14','text-aling':'center'}),
         dbc.Button('ADICIONAR',id='btn-cadpet-add',color='primary')     

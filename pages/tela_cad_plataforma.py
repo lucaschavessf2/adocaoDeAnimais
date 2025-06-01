@@ -15,8 +15,8 @@ def return_layout():
         html.H4("Telefone:"),
         dbc.Input(id='input-cd-telefone', placeholder="(00) 00000-0000", type='text', size="sm", className="mb-3"),
 
-        html.H4("Endereco:"),
-        dbc.Input(id='input-cd-endereco', placeholder="Município-UF", type='text', size="sm", className="mb-3"),
+        html.H4("CEP:"),
+        dbc.Input(id='input-cd-endereco', placeholder="00000-000", type='text', size="sm", className="mb-3"),
 
         html.H4("Email:"),
         dbc.Input(id='input-cd-email', placeholder="Digite seu email", type='email', size="sm", className="mb-3"),

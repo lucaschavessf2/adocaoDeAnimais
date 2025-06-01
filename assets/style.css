@@ -24,3 +24,15 @@ label{
     accent-color: black;
 }
 
+html, body, #_dash-app-content {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.card, .card-body {
+    height: 100%;
+}
+
+

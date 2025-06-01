@@ -48,8 +48,8 @@ def return_layout(session_usuario):
                 html.H4("Data de nascimento:", style = {'color': 'black'}),
                 html.H6(id='h6-perfil-data',children=session_usuario['data']),
                 
-                html.H4("Endereço: "),
-                html.H6(id='h6-perfil-endereco',children=session_usuario['endereco']),
+                html.H4("CEP: "),
+                html.H6(id='h6-perfil-endereco',children=session_usuario['cep']),
 
                 html.H4("Telefone:"),
                 html.H6(id='h6-perfil-telefone',children=session_usuario['telefone']),
