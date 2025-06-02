@@ -10,9 +10,9 @@ def return_layout(session_usuario):
         html.H4('Espécie:'),
         html.Div(children=[
             dbc.RadioItems(id='ri-editadotante-especie',
-                           options=[{'label': 'Gato', 'value': 'gato'}, {'label': 'Cachorro', 'value': 'cachorro'},
-                                    {'label': 'Ave', 'value': 'ave'}, {'label': 'Réptil', 'value': 'réptil'},
-                                    {'label': 'Peixe', 'value': 'peixe'}, {'label': 'Outro', 'value': 'outro'}],
+                           options=[{'label': 'Gato', 'value': 'Gato'}, {'label': 'Cachorro', 'value': 'Cachorro'},
+                                    {'label': 'Ave', 'value': 'Ave'}, {'label': 'Réptil', 'value': 'Réptil'},
+                                    {'label': 'Peixe', 'value': 'Peixe'}, {'label': 'Outro', 'value': 'Outro'}],
                            value=session_usuario['especie'],inline=True, inputStyle={"color": "black", "background-color": 'grey'}),
         ], style={'display': 'flex', 'align-items': 'center', 'justify-itemns': 'center'}),
         html.H4('Estágio da vida:'),

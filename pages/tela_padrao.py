@@ -13,7 +13,7 @@ def return_layout():
             ], ),
             width=12
         ),
-    style={"backgroundImage": "url('/assets/Design-sem-nome-69.png')",}),
+    style={"backgroundImage": "url('/assets/fundopetmatch.png')",}),
     fluid=True,
     className="bg-light"
 )

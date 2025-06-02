@@ -2,7 +2,13 @@ h4{
     color :black;
     font-size: 18px;
 }
-
+h5{
+    color :rgb(60, 60, 60);
+    font-size: 16px;
+}
+h3{
+    color :black;
+}
 h6{
     color :black;
     font-size: medium;

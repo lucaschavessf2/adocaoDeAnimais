@@ -29,6 +29,7 @@ def return_layout():
     style={
         "maxWidth": "500px",
         "width": "100%",
+        "height":"95%",
         "borderRadius": "12px",
         "backgroundColor": "#ffffff"
     }

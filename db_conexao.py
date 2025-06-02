@@ -102,9 +102,14 @@ class Conexao:
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             id_usuario INTEGER,
             especie TEXT,
-            estagio DATE,
+            estagio TEXT,
+            porte TEXT,
+            deficiencia TEXT,
+            criancas TEXT,
+            outros_animais TEXT,
+            temperamento TEXT,
             cor TEXT,
-            raca INTEGER,
+            raca TEXT,
             FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
         )
         """)
@@ -239,35 +244,4 @@ class Conexao:
 
 
 if __name__ == '__main__':
-    print('x')
-    c = Conexao()
-    c.iniciar()
-    id_adotante = 3
-    c.cursor.execute("SELECT especie, estagio, porte, deficiencia, criancas, outros_animais, temperamento FROM adotantes WHERE id_usuario = ?", (id_adotante,))
-    adotante = c.cursor.fetchone()
-    print(adotante)
-    if adotante:
-        sql = f"""
-        SELECT * FROM (SELECT 
-            pets.*, 
-            (
-                (CASE WHEN pets.especie = ? THEN 5 ELSE 0 END) +
-                (CASE WHEN pets.estagio = ? THEN 3 ELSE 0 END) +
-                (CASE WHEN pets.porte = ? THEN 2 ELSE 0 END) +
-                (CASE WHEN pets.deficiencia = ? THEN 1 ELSE 0 END) +
-                (CASE WHEN pets.criancas = ? THEN 1 ELSE 0 END) +
-                (CASE WHEN pets.outros_animais = ? THEN 1 ELSE 0 END) +
-                (CASE WHEN pets.temperamento = ? THEN 1 ELSE 0 END)
-            ) AS score
-        FROM pets) as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != {id_adotante} ORDER BY score DESC
-        """
-
-        c.cursor.execute(sql, adotante)
-        recomendacoes = c.cursor.fetchall()
-
-        for pet in recomendacoes:
-            print(f"Pet ID {pet[0]} - Score: {pet[11]}")
-            print(pet)
-
-    else:
-        print("Adotante não encontrado")
+    pass

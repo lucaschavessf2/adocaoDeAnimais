@@ -21,7 +21,8 @@ def gerar_cards(perdidos):
                         html.H4(f"Raça: {perdido[10]}"),
                         html.H4(f"Responsável: {perdido[13]}"),
                         html.H4(f"Endereço: {perdido[15]}"),
-                        html.H4(f"Contato: {perdido[16]}"),
+                        html.H4(f"Contato: {perdido[17]}"),
+                        html.A(children="Ver endereço",href=perdido[16],target="_blank"),
                         dbc.Button(id={'type': 'btn-card-encontrar', 'index': perdido[0]},children='Encontrei',style={'margin':'5px'})
                     ],style={"box-shadow": "2px 2px 10px 0px rgba(10, 9, 7, 0.10)","backgroundColor": "#DCDCDC","widht":'100%','height':'95%',"margin-bottom":'10px'})
                 ], md=4)

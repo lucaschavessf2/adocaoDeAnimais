@@ -10,7 +10,10 @@ from dash import dcc, ALL, ctx
 from datetime import datetime
 from db_conexao import Conexao
 from dash.dependencies import Input, Output, State
-from pages import tela_menu,tela_cad_plataforma,tela_login,tela_menu_dois,tela_cad_pet,tela_buscar_pet,tela_perfil,tela_edit_pet,tela_cad_adotante, tela_pet_perdido, tela_meus_pets, tela_buscar_perdidos,tela_edit_perdidos,tela_editar_perfil,tela_editar_preferencia
+from pages.principais import tela_menu, tela_cad_plataforma, tela_login, tela_menu_dois
+from pages.pet import tela_cad_pet, tela_buscar_pet, tela_edit_pet, tela_meus_pets
+from pages.usuario import tela_perfil, tela_cad_adotante,tela_editar_perfil, tela_editar_preferencia
+from pages.perdido import tela_cad_perdido, tela_buscar_perdidos, tela_edit_perdidos
 
 #Função para verificar se é um email
 def verificar_email(email):
@@ -101,7 +104,7 @@ class Callbacks:
                     layout_interno =  tela_cad_pet.return_layout()
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif caminho == '/pets-perdidos':
-                    layout_interno =  tela_pet_perdido.return_layout()
+                    layout_interno =  tela_cad_perdido.return_layout()
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 elif caminho == '/perfil':
                     layout_interno =  tela_perfil.return_layout(session_usuario)
@@ -239,14 +242,13 @@ class Callbacks:
         State('ri-cadpet-especie','value'),State('ri-cadpet-estagio','value'),State('ri-cadpet-porte','value'),State('ri-cadpet-deficiencia','value'),
         State('ri-cadpet-criancas','value'),State('ri-cadpet-outros','value'),State('ri-cadpet-temperamento','value'),
         State('input-cadpet-cor','value'),State('input-cadpet-raca','value'),State('session-usuario', 'data'),
-        State('upload-image', 'contents'),State('upload-image', 'filename')],prevent_initial_call=True)
-        def __botao_cadastro_pet(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca,session_usuario,conteudo,arquivo):
+        State('upload-image', 'contents')],prevent_initial_call=True)
+        def __botao_cadastro_pet(botao,especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca,session_usuario,conteudo):
             if botao:
                     id_pet = self.db_conexao.inserir_dados("pets","(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],especie,estagio,porte,deficiencia,criancas,outros,temperamento,cor,raca))
                     if conteudo is not None:
                         data = conteudo.encode("utf8").split(b";base64,")[1]
-                        _,extensao =  os.path.splitext(arquivo)
-                        caminho_imagem = f'./assets/imagens/adotar_{id_pet}.jpg'
+                        caminho_imagem = f'./assets/imagens/card_{id_pet}.jpg'
                         
                         with open(caminho_imagem, "wb") as fp:
                             fp.write(base64.decodebytes(data))
@@ -271,9 +273,10 @@ class Callbacks:
                     id_pet = triggered_id['index']
                     adotado = self.db_conexao.consultar_dados('pets','*','where id = ?',(id_pet,))[0]
                     print(adotado)
-                    valores_adotado = (adotado[2],adotado[3],adotado[9],adotado[10])
-                    self.db_conexao.inserir_dados('adotados',"(id_usuario,especie,estagio,cor,raca)",(session_usuario['id'],)+  (valores_adotado))
+                    valores_adotado = tuple(list(adotado)[2:])
+                    id_adotado = self.db_conexao.inserir_dados('adotados',"(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],)+  (valores_adotado))
                     self.db_conexao.deletar_dados('pets','WHERE id = ?',(id_pet,))
+                    os.rename(f"./assets/imagens/card_{id_pet}.jpg", f"./assets/imagens/adotar_{id_adotado}.jpg")
                     # print((session_usuario['id'],)+(tuple(list(adotado[0])[2:])))
                     return ['/buscar-pet/']
             return dash.no_update
@@ -289,12 +292,15 @@ class Callbacks:
                     return [f'/editar-pet/{id_pet}${id_usuario}']
             return dash.no_update
         
-        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input('btn-editpet-finalizar','n_clicks'),State('url','pathname'),State('ri-editpet-estagio','value'),State('input-editpet-cor','value'),State('input-editpet-raca','value')],prevent_initial_call=True)
-        def __botao_atualizar_pet(botao,caminho,estagio,cor,raca):
+        @self.app.callback([Output('url','pathname', allow_duplicate=True)],[Input('btn-editpet-finalizar','n_clicks'),State('url','pathname'),State('ri-editpet-estagio','value'),
+                            State('ri-editpet-porte','value'),State('ri-editpet-deficiencia','value'),State('ri-editpet-criancas','value'),
+                            State('ri-editpet-outros','value'),State('ri-editpet-temperamento','value'),
+                            State('input-editpet-cor','value'),State('input-editpet-raca','value')],prevent_initial_call=True)
+        def __botao_atualizar_pet(botao,caminho,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca):
             if botao:
                     id_pet = caminho.split('/')[2].split('$')[0]
-                    self.db_conexao.atualizar_dados("pets","(estagio,cor,raca)",(estagio,cor,raca),f"WHERE id ={id_pet}")
-                    return ["/perfil"]
+                    self.db_conexao.atualizar_dados("pets","(estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca),f"WHERE id ={id_pet}")
+                    return ["/meus-pets/"]
             else:
                 return dash.no_update
             
@@ -315,10 +321,17 @@ class Callbacks:
         @self.app.callback([Output('span-perdidos-aviso','children', allow_duplicate=True)],[Input('btn-perdidos-add','n_clicks'),
         State('ri-perdidos-especie','value'),State('ri-perdidos-estagio','value'),State('ri-perdidos-porte','value'),
         State('ri-perdidos-temperamento','value'),State('input-perdidos-cor','value'),State('input-perdidos-raca','value'),
-        State('input-perdidos-nome','value'),State('input-perdidos-descricao','value'),State('input-perdidos-recompensa','value'),State('session-usuario', 'data')],prevent_initial_call=True)
-        def __botao_cadastro_perdido(botao,especie,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa,session_usuario):
+        State('input-perdidos-nome','value'),State('input-perdidos-descricao','value'),State('input-perdidos-recompensa','value'),
+        State('session-usuario', 'data'),State('upload-image-perdido', 'contents')],prevent_initial_call=True)
+        def __botao_cadastro_perdido(botao,especie,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa,session_usuario,conteudo):
             if botao:
-                    self.db_conexao.inserir_dados("perdidos","(id_usuario,especie,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa)",(session_usuario['id'],especie,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa))
+                    id_perdido = self.db_conexao.inserir_dados("perdidos","(id_usuario,especie,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa)",(session_usuario['id'],especie,estagio,porte,temperamento,cor,raca,nome,descricao,recompensa))
+                    if conteudo is not None:
+                        data = conteudo.encode("utf8").split(b";base64,")[1]
+                        caminho_imagem = f'./assets/imagens/perdidos_{id_perdido}.jpg'
+                        
+                        with open(caminho_imagem, "wb") as fp:
+                            fp.write(base64.decodebytes(data))
                     return ["Cadastro efetuado com sucesso"]
             else:
                 return dash.no_update
