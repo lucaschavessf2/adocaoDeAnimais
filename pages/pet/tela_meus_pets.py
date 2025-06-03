@@ -15,34 +15,34 @@ def gerar_cards(pets,tipo):
                     ])
         else:
             botoes = html.Div()
+        if tipo == 'card' or tipo == 'adotados':
+            atributos = [html.H4(f"Animal: {pet[2]}"),
+            html.H4(f"Estágio: {pet[3]}"),
+            html.H4(f"Porte: {pet[4]}"),
+            html.H4(f"Deficiência: {pet[5]}"),
+            html.H4(f"Para crianças: {pet[6]}"),
+            html.H4(f"Outros animais: {pet[7]}"),
+            html.H4(f"Temperamento: {pet[8]}"),
+            html.H4(f"Cor: {pet[9]}"),
+            html.H4(f"Raça: {pet[10]}")]
+        elif tipo == 'perdidos':
+            atributos = [html.H4(f"Animal: {pet[2]}"),
+            html.H4(f"Estágio: {pet[3]}"),
+            html.H4(f"Porte: {pet[4]}"),
+            html.H4(f"Temperamento: {pet[5]}"),
+            html.H4(f"Cor: {pet[6]}"),
+            html.H4(f"Raça: {pet[7]}"),
+            html.H4(f"Nome: {pet[8]}"),
+            html.H4(f"Descrição: {pet[9]}"),
+            html.H4(f"Recompensa: {pet[10]}")]
         if count <= 3:
             card = dbc.Col([
                     dbc.Card([
                         html.Img(src=f'../assets/imagens/{tipo}_{pet[0]}.jpg', style={'height':'50%','width':'100%'}),
-                        html.Div(children = [
-                            html.H4(f"Animal: {pet[2]}"),
-                            html.H4(f"Estágio: {pet[3]}"),
-                            html.H4(f"Porte: {pet[4]}"),
-                            html.H4(f"Deficiência: {pet[5]}"),
-                            html.H4(f"Para crianças: {pet[6]}"),
-                            html.H4(f"Outros animais: {pet[7]}"),
-                            html.H4(f"Temperamento: {pet[8]}"),
-                            html.H4(f"Cor: {pet[9]}"),
-                            html.H4(f"Raça: {pet[10]}"),
-                        ],style={'overflowY': 'auto'}),
+                        html.Div(children = atributos,style={'overflowY': 'auto'}),
                         botoes
                     ],style={"box-shadow": "2px 2px 10px 0px rgba(10, 9, 7, 0.10)","backgroundColor": "#DCDCDC","widht":'100%','height':'100%',"margin-bottom":'10px'})
                 ], md=4,style={'height':'100%'})
-            # card = dbc.Col([
-            #         dbc.Card([
-            #             html.H4(f"Animal: {pet[2]}"),
-            #             html.H4(f"Estágio: {pet[3]}"),
-            #             html.H4(f"Cor: {pet[4]}"),
-            #             html.H4(f"Espécie: {pet[5]}"),
-            #             dbc.Button(id={'type': f'btn-{tipo}-editar', 'index': pet[0]},children='Editar',style={'margin':'5px'}),
-            #             dbc.Button(id={'type': f'btn-{tipo}-excluir', 'index': pet[0]},children='Excluir',style={'margin':'5px','background-color':'red'})
-            #         ],style={"box-shadow": "2px 2px 10px 0px rgba(10, 9, 7, 0.10)","backgroundColor": "#DCDCDC","widht":'100%','height':'95%',"margin-bottom":'10px'})
-            #     ], md=4)
             cards.append(card)  
         if count ==3 or count >= qtd_pets:
             print(pet)

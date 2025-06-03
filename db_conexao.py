@@ -2,9 +2,7 @@ import os
 import bcrypt
 import sqlite3
 
-#Classe responsável por fazer a conexão com o banco
 class Conexao:
-    #Inicia as variáveis globais da classe  e starta algumas funções
     def __init__(self):
         self.conn = None
         self.cursor = None
@@ -18,17 +16,14 @@ class Conexao:
             os.mkdir("./database")
 
 
-    #Função responsável por se conectar ao banco
     def iniciar(self):
         self.conn = sqlite3.connect("database/petmatch.db")
         self.cursor = self.conn.cursor()
 
-    #Função que finaliza o comando no banco e encerra a conexão
     def encerrar(self):
         self.conn.commit()
         self.conn.close()
 
-    #Função que cria as tabelas necessárias
     def criar_tabelas(self):
         self.iniciar()
         self.cursor.execute("PRAGMA foreign_keys = ON")
@@ -115,14 +110,12 @@ class Conexao:
         """)
         self.encerrar()
 
-    #Função que insere os dados em uma tabela
     def inserir_dados(self,tabela,colunas,dados):
         self.iniciar()
         interrogacao = "(?"
         for c in range(len(colunas.split(','))-1):
             interrogacao = interrogacao + ',?'
         interrogacao = interrogacao +')'
-        print('---------------',interrogacao)
         sql = f"""INSERT INTO {tabela} {colunas} VALUES {interrogacao}"""
         print(sql)
         self.cursor.execute(sql,dados)
@@ -151,7 +144,6 @@ class Conexao:
         print(self.consultar_dados(tabela,"*"))
 
     
-    #Função que consulta os dados em uma tabela e retorna suas linhas
     def consultar_dados(self, tabela, colunas, filtro='', params=()):
         self.iniciar()
         sql = f"SELECT {colunas} FROM {tabela} {filtro}"
@@ -161,7 +153,6 @@ class Conexao:
         self.encerrar()
         return linhas
 
-    #Função para verificar se o login existe
     def verificar_login(self, email, senha):
         linhas = self.consultar_dados(
             "login_usuarios",
@@ -184,7 +175,7 @@ class Conexao:
         
     def recomendar_pets(self,id_adotante):
         self.iniciar()
-        self.cursor.execute("SELECT especie, estagio, porte, deficiencia, criancas, outros_animais, temperamento FROM adotantes WHERE id_usuario = ?", (id_adotante,))
+        self.cursor.execute("SELECT LOWER(especie), LOWER(estagio), LOWER(porte), LOWER(deficiencia), LOWER(criancas), LOWER(outros_animais), LOWER(temperamento) FROM adotantes WHERE id_usuario = ?", (id_adotante,))
         adotante = self.cursor.fetchone()
         print(adotante)
         if adotante:
@@ -192,13 +183,13 @@ class Conexao:
             SELECT * FROM (SELECT 
                 pets.*, 
                 (
-                    (CASE WHEN pets.especie = ? THEN 5 ELSE 0 END) +
-                    (CASE WHEN pets.estagio = ? THEN 3 ELSE 0 END) +
-                    (CASE WHEN pets.porte = ? THEN 2 ELSE 0 END) +
-                    (CASE WHEN pets.deficiencia = ? THEN 1 ELSE 0 END) +
-                    (CASE WHEN pets.criancas = ? THEN 1 ELSE 0 END) +
-                    (CASE WHEN pets.outros_animais = ? THEN 1 ELSE 0 END) +
-                    (CASE WHEN pets.temperamento = ? THEN 1 ELSE 0 END)
+                    (CASE WHEN LOWER(pets.especie) = ? THEN 10 ELSE 0 END) +
+                    (CASE WHEN LOWER(pets.estagio) = ? THEN 3 ELSE 0 END) +
+                    (CASE WHEN LOWER(pets.porte) = ? THEN 2 ELSE 0 END) +
+                    (CASE WHEN LOWER(pets.deficiencia) = ? THEN 1 ELSE 0 END) +
+                    (CASE WHEN LOWER(pets.criancas) = ? THEN 1 ELSE 0 END) +
+                    (CASE WHEN LOWER(pets.outros_animais) = ? THEN 1 ELSE 0 END) +
+                    (CASE WHEN LOWER(pets.temperamento) = ? THEN 1 ELSE 0 END)
                 ) AS score
             FROM pets) as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != {id_adotante}
             ORDER BY score DESC
@@ -210,7 +201,6 @@ class Conexao:
             return recomendacoes
     def coletar_dados_usuario(self,id):
         print(id)
-        # dados = self.consultar_dados("usuarios","*",f"as u left join adotantes as a where u.id == a.id_usuario and u.id_login == ?",(id,))
         if self.consultar_dados("adotantes", "COUNT(*)", "where id_usuario = ?", (id,))[0][0] > 0:
             dados = self.consultar_dados("usuarios","*",f"as u left join adotantes as a where u.id == a.id_usuario and u.id_login = ?",(id,))[0]
             dados_usuario = {
@@ -243,5 +233,9 @@ class Conexao:
         return dados_usuario
 
 
+
 if __name__ == '__main__':
-    pass
+    c = Conexao()
+    c.iniciar()
+    c.cursor.execute('DROP TABLE adotados')
+    c.encerrar()

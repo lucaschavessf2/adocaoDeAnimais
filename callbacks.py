@@ -15,7 +15,6 @@ from pages.pet import tela_cad_pet, tela_buscar_pet, tela_edit_pet, tela_meus_pe
 from pages.usuario import tela_perfil, tela_cad_adotante,tela_editar_perfil, tela_editar_preferencia
 from pages.perdido import tela_cad_perdido, tela_buscar_perdidos, tela_edit_perdidos
 
-#Função para verificar se é um email
 def verificar_email(email):
     try:
         pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
@@ -24,7 +23,6 @@ def verificar_email(email):
         return False
 
 
-#Função para verificar se é uma data válida
 def verificar_data(data):
     try:
         datetime.strptime(data, '%d/%m/%Y')
@@ -41,7 +39,7 @@ def verificar_endereco(endereco):
         if 'erro' not in endereco_total:
             return True
     return False
-#Função que verifica se o cadastro é válido
+
 def verificar_cadastro(nome,data,email,senha,telefone,endereco,db_conexao):
     email_real = verificar_email(email)
     data_real = verificar_data(data)
@@ -60,15 +58,12 @@ def buscar_maps(endereco):
 
 
 
-#Classe dos callbacks
 class Callbacks:
     def __init__(self,app):
         self.app = app
         self.db_conexao = Conexao()
 
-    #Função que cria todos os callbacks
     def definir_callbacks(self):
-        #Esse callback ativa toda vez que a url muda e retorna uma tela dependendo do caminho da url
         @self.app.callback(Output('main-card', 'children'),Input('url','pathname'),State('session-login', 'data'),State('session-usuario', 'data'))
         def __atualizar_tela(caminho,session_data,session_usuario):
             print(caminho)
@@ -83,20 +78,27 @@ class Callbacks:
                     adotantes = self.db_conexao.consultar_dados("adotantes","COUNT(*)",f"WHERE id_usuario = ?",(session_usuario['id'],))
                     print(adotantes[0][0],'----------')
                     if adotantes[0][0]>0:
-                        busca = caminho.split('/')[2]
+                        busca = caminho.split('/')[2].lower()
                         print(busca)
-                        # pets = self.db_conexao.consultar_dados("pets","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != ? and (especie like '%{busca}%')",(session_usuario['id'],))
-                        pets= self.db_conexao.recomendar_pets(session_usuario['id'])
-                        layout_interno = tela_buscar_pet.return_layout(pets)
+                        if busca in [None,"","recomendações","recomendacoes"]:
+                            pets= self.db_conexao.recomendar_pets(session_usuario['id'])
+                            span = ""
+                        else:
+                            pets = self.db_conexao.consultar_dados("pets","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != ? and (LOWER(especie) like '%{busca}%')",(session_usuario['id'],))
+                            for i,pet in enumerate(pets):
+                                pet = list(pet)
+                                pet.insert(11,'?')
+                                pets[i] = pet
+                            span = 'Você saiu do modo de recomendações, para voltar pesquise "recomendações"'
+                        print(pets)
+                        layout_interno = tela_buscar_pet.return_layout(pets,span)
                     else:
                         layout_interno = tela_cad_adotante.return_layout()
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 
                 if '/buscar-perdidos/' in caminho:
-
-                    busca = caminho.split('/')[2]
-                    print(busca)
-                    perdidos = self.db_conexao.consultar_dados("perdidos","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != ? and (especie like '%{busca}%')",(session_usuario['id'],))
+                    busca = caminho.split('/')[2].lower()
+                    perdidos = self.db_conexao.consultar_dados("perdidos","*",f"as p  left join usuarios as us where p.id_usuario == us.id and p.id_usuario != ? and (LOWER(especie) like '%{busca}%')",(session_usuario['id'],))
                     layout_interno = tela_buscar_perdidos.return_layout(perdidos)
                     return tela_menu_dois.return_layout(layout_interno,session_usuario)
                 
@@ -145,7 +147,6 @@ class Callbacks:
             else:
                 return dcc.Location(href="/entrar", id="redirect-login")
             
-        #Ativa quando o botão da tela de login é ativado, verifica se é possível o login e muda a url 
         @self.app.callback([Output('session-login', 'data', allow_duplicate=True),Output('url','pathname', allow_duplicate=True),Output('span-login-aviso','children'),Output('session-usuario', 'data')],[Input('btn-login-entrar','n_clicks'),State('input-login-email','value'),State('input-login-senha','value')],prevent_initial_call=True)
         def __botao_login(botao,email,senha):
             if botao:
@@ -167,7 +168,6 @@ class Callbacks:
 
 
 
-        #Ativa quando o botão da tela de cadastro é ativado, verifica se é possível o cadastro e muda a url
         @self.app.callback([Output('url','pathname', allow_duplicate=True),Output('span-cadastro-aviso','children')],[Input('btn-cad-cadastrar','n_clicks'),State('input-cd-nome','value'),State('input-cd-dtnascimento','value'),
         State('input-cd-email','value'),State('input-cd-senha','value'),State('input-cd-telefone','value'),State('input-cd-endereco','value')],prevent_initial_call=True)
         def __botao_cadastro(botao,nome,data,email,senha,telefone,cep):
@@ -182,7 +182,7 @@ class Callbacks:
                     self.db_conexao.inserir_dados("usuarios","(id_login,nome,data_nascimento,telefone,cep,localizacao)",(id_login,nome,data,telefone,cep,localizacao))
                     return ["/entrar",""]
                 else:
-                    return [dash.no_update,"Campos vázios, email em uso ou data inválida!"]
+                    return [dash.no_update,"Campos vázios, email em uso, data ou CEP inválidos!"]
             else:
                 return dash.no_update
             
@@ -225,7 +225,7 @@ class Callbacks:
         @self.app.callback(
             [Output('url', 'pathname', allow_duplicate=True), Output('session-usuario', 'data', allow_duplicate=True)],
             [Input('btn-editadotante-add', 'n_clicks'),State('session-usuario','data'), State('ri-editadotante-especie', 'value'), State('ri-editadotante-estagio', 'value'), State('ri-editadotante-porte',  'value'), State('ri-editadotante-deficiencia', 'value'), State('ri-editadotante-criancas', 'value'), State('ri-editadotante-outros', 'value'), State('ri-editadotante-temperamento', 'value')], prevent_initial_call=True)
-        def __botao_editar_perfil(botao, session_usuario, especie, estagio, porte, deficiencia, criancas, outros_animais, temperamento):
+        def __botao_editar_preferencias(botao, session_usuario, especie, estagio, porte, deficiencia, criancas, outros_animais, temperamento):
             if botao:
                 id_usuario = session_usuario['id']
                 self.db_conexao.atualizar_dados("adotantes", "(especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento)", (especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento),f"WHERE id ={id_usuario}")
@@ -237,7 +237,6 @@ class Callbacks:
 
 
 
-        #Ativa quando o botão da tela de cadastro é ativado
         @self.app.callback([Output('span-cadpet-aviso','children', allow_duplicate=True)],[Input('btn-cadpet-add','n_clicks'),
         State('ri-cadpet-especie','value'),State('ri-cadpet-estagio','value'),State('ri-cadpet-porte','value'),State('ri-cadpet-deficiencia','value'),
         State('ri-cadpet-criancas','value'),State('ri-cadpet-outros','value'),State('ri-cadpet-temperamento','value'),
@@ -277,7 +276,6 @@ class Callbacks:
                     id_adotado = self.db_conexao.inserir_dados('adotados',"(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],)+  (valores_adotado))
                     self.db_conexao.deletar_dados('pets','WHERE id = ?',(id_pet,))
                     os.rename(f"./assets/imagens/card_{id_pet}.jpg", f"./assets/imagens/adotar_{id_adotado}.jpg")
-                    # print((session_usuario['id'],)+(tuple(list(adotado[0])[2:])))
                     return ['/buscar-pet/']
             return dash.no_update
         

@@ -17,7 +17,6 @@ card_style = {
 def return_layout():
 
     layout = dbc.Card([
-        # html.Img(src='assets\logo_5.png',style={'padding':'20px','padding-bottom':'40px',}),
         dbc.Button('ENTRAR', id='btn-entrar',href='/entrar', color='success', style={'background-color': '#0c581e'}),
         html.Div(style={'margin':'5px'}),
         dbc.Button('CADASTRAR', id='btn-cadastrar',href='/cadastrar', color='success', style={'background-color': '#0c581e'}),

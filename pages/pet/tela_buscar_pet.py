@@ -7,7 +7,6 @@ def gerar_cards(pets):
     count = 1
     qtd_pets = len(pets)
     for i, pet in enumerate(pets):
-        print(pet)
         if count <= 3:
             card = dbc.Col([
                     dbc.Card([
@@ -42,7 +41,6 @@ def gerar_cards(pets):
                 ], md=4,style={'height':'100%'})
             cards.append(card)  
         if count ==3 or count >= qtd_pets:
-            print(pet)
             linha = dbc.Row(cards,style={'width':'100%','height':'80%'})
             linhas.append(linha)
             cards = []
@@ -50,32 +48,8 @@ def gerar_cards(pets):
             count = 0
         count += 1
     return linhas
-# def return_layout(pets):
-#     cards = gerar_cards(pets)
-#     layout = dbc.Card(
-#         dbc.CardBody([
-#             html.H3("RECOMENDAÇÕES DE PET", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
-#             html.Hr(style={'width':'100%'}),
-#             html.Div(children=[
-#                 dbc.Input(id='input-buscar-busca', placeholder="Pesquise aqui seu próximo animal", type='text', size="sm", className="mb-3"),
-#                 dbc.Button(id='btn-buscar-busca',children='Pesquisar',style={'margin-left':'5px','height':'68%'}, size="sm")
-#             ],style={'display':'flex','width':'100%'}),
-#             html.Div(id='div-rec-itens',children=cards,style={'overflowY': 'auto','width':'100%','height':'90%'}),
 
-            
-#         ],style={'height':'100%','display':'flex','width':'100%','flex-wrap':'wrap'}),
-#         className="shadow-sm p-4",
-
-#         style={
-#             "width": "100%",
-#             "height":"100%",
-#             "borderRadius": "12px",
-#             "backgroundColor": "#f8f9fa"
-#         }
-#     )
-#     return layout
-
-def return_layout(pets):
+def return_layout(pets,span):
     cards = gerar_cards(pets)
     layout = dbc.Card(children=[
         html.H3("RECOMENDAÇÕES DE PET", className="text-center mb-4", style={'fontWeight': 'bold','color':'black'}),
@@ -84,6 +58,7 @@ def return_layout(pets):
             dbc.Input(id='input-buscar-busca', placeholder="Pesquise aqui seu próximo animal", type='text', size="sm", className="mb-3"),
             dbc.Button(id='btn-buscar-busca',children='Pesquisar',style={'margin-left':'5px','height':'68%'}, size="sm")
         ],style={'display':'flex','width':'100%'}),
+        html.Span(children=span,style={'color':'#fd7e14','text-aling':'center'}),
         html.Div(id='div-rec-itens',children=cards,style={'overflowY': 'auto','width':'100%','height':'90%'}),
     ],style={"width": "100%","height":"100%","borderRadius": "12px","backgroundColor": "#f8f9fa", "padding":'20px'})
     return layout
