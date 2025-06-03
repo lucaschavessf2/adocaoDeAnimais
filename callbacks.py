@@ -275,7 +275,9 @@ class Callbacks:
                     valores_adotado = tuple(list(adotado)[2:])
                     id_adotado = self.db_conexao.inserir_dados('adotados',"(id_usuario,especie,estagio,porte,deficiencia,criancas,outros_animais,temperamento,cor,raca)",(session_usuario['id'],)+  (valores_adotado))
                     self.db_conexao.deletar_dados('pets','WHERE id = ?',(id_pet,))
-                    os.rename(f"./assets/imagens/card_{id_pet}.jpg", f"./assets/imagens/adotar_{id_adotado}.jpg")
+                    if os.path.exists(f"./assets/imagens/adotados_{id_adotado}.jpg"):
+                        os.remove(f"./assets/imagens/adotados_{id_adotado}.jpg")
+                    os.rename(f"./assets/imagens/card_{id_pet}.jpg", f"./assets/imagens/adotados_{id_adotado}.jpg")
                     return ['/buscar-pet/']
             return dash.no_update
         

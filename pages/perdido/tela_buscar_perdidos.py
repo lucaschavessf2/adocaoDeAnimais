@@ -36,7 +36,7 @@ def gerar_cards(perdidos):
                             html.H5(f"CEP: {perdido[15]}"),
                             html.A(children="Ver endereço",href=perdido[16],target="_blank")
                         ],style={'overflowY': 'auto',"width":"100%","padding":"10px","backgroundColor": "#EEEEEE","border-left":'10px'}),
-                        dbc.Button(id={'type': 'btn-card-encontrar', 'index': perdido[0]},children='Adotar',style={'margin':'5px','width':'80%'})
+                        dbc.Button(id={'type': 'btn-card-encontrar', 'index': perdido[0]},children='Encontrei',style={'margin':'5px','width':'80%'})
                 ],style={"box-shadow": "2px 2px 10px 0px rgba(10, 9, 7, 0.10)","backgroundColor": "#EEEDED","widht":'100%','height':'95%',"margin-bottom":'10px',"font-family": 'Segoe UI',"border-radius":'16px',"flex-direction": "column","display":"flex","align-items":"center"})
                 ], md=4,style={'height':'100%'})
             cards.append(card)  
