@@ -15,13 +15,13 @@ def return_layout(layout_interno,session_usuario):
                             'height': '20%',
                             "width": "100%"
                         }),
-                        html.H1(f"Olá, {session_usuario['nome']}", style={'font-family': 'Voltaire, sans-serif', 'font-size': '24px','color':'black', 'text-align': 'center','font-weight': 'bold' }),
-                        dbc.Button(id='btn-menu-perfil', children='Meu Perfil', href='/perfil', style={'font-family': 'Voltaire, sans-serif', 'font-size': '18px','color':'white', 'text-align': 'center', 'margin-bottom':'10px'}),
-                        dbc.Button(id='btn-menu-pets', children='Meus Pets', href='/meus-pets/', style={'font-family': 'Voltaire, sans-serif', 'font-size': '18px','color':'white', 'text-align': 'center', 'margin-bottom':'10px'}),
-                        dbc.Button(id='btn-menu-buscar', children='Pets para Adoção', href='/buscar-pet/', style={'font-family': 'Voltaire, sans-serif', 'font-size': '18px','color':'white', 'text-align': 'center', 'margin-bottom':'10px'}),
-                        dbc.Button(id='btn-menu-cadastrar', children='Cadastrar Pet Para Adoção', href='/cadastrar-pet', style={'font-family': 'Voltaire, sans-serif', 'font-size': '18px','color':'white', 'text-align': 'center', 'margin-bottom':'10px'}),
-                        dbc.Button(id='btn-menu-buscar-perdidos', children='Pets Perdidos', href='/buscar-perdidos/', style={'font-family': 'Voltaire, sans-serif', 'font-size': '18px','color':'white', 'text-align': 'center', 'margin-bottom':'10px'}),
-                        dbc.Button(id='btn-menu-perdidos', children='Cadastrar Pet Perdido', href='/pets-perdidos', style={'font-family': 'Voltaire, sans-serif', 'font-size': '18px','color':'white', 'text-align': 'center', 'margin-bottom':'10px'}),
+                        html.H1(f"Olá, {session_usuario['nome']}", style={'font-family': 'Voltaire', 'font-size': '20px','color':'black'}),
+                        dbc.Button(id='btn-menu-buscar', children='Buscar', href='/buscar-pet/',style={'margin-bottom':'10px'}),
+                        dbc.Button(id='btn-menu-buscar-perdidos', children='Buscar Pets Perdidos', href='/buscar-perdidos/',style={'margin-bottom':'10px'}),
+                        dbc.Button(id='btn-menu-perfil', children='Perfil', href='/perfil',style={'margin-bottom':'10px'}),
+                        dbc.Button(id='btn-menu-pets', children='Meus Pets', href='/meus-pets/',style={'margin-bottom':'10px'}),
+                        dbc.Button(id='btn-menu-cadastrar', children='Cadastrar', href='/cadastrar-pet', style={'margin-bottom':'10px'}),
+                        dbc.Button(id='btn-menu-perdidos', children='Pets Perdidos', href='/pets-perdidos',style={'margin-bottom':'10px'}),
                         
                         
                         html.Div(style={'height':'100%'}),
